@@ -1,0 +1,58 @@
+# Paper Tab. 2 - Flux.1-schnell, GenEval, pink noise (alpha=0.2), DPP + HPSv2 (warmup)
+# Hyperparameters: lambda_div=5 (DPP), lambda_q=5 (HPS), lr=2, gc=0.15, n_iters=80
+# HPS warmup: HPS excluded from loss for the first 20 iters (set via CLI flag in slurm).
+# Revert: relative HPS < 0.05 (set via CLI flags in slurm).
+
+paths:
+  cache_dir: "./cache"
+  save_dir: "./outputs"
+
+model:
+  name: "flux-schnell"
+  dtype: "bfloat16"
+  device_id: 0
+  cpu_offloading: false
+
+optimization:
+  lr: 2.0
+  n_iters: 80
+  n_inference_steps: 1
+  num_samples: 4
+  optim: "sgd"
+  grad_clip: 0.15
+  seed: 42
+  noise_type: "pink"
+  noise_exponent: 0.2
+
+regularization:
+  enable: true
+  weight: 0.01
+
+rewards:
+  # Pink schnell: HPS enters the loss after a warm-up of 20 iters; a relative
+  # revert (HPS dropping more than 0.05 below initial) snaps the latent back.
+  hps:
+    enable: true
+    weighting: 5.0
+    warmup_iters: 20
+    enable_stopping: true
+    enable_revert: true
+    stopping_threshold: 0.05
+  clip:
+    enable: false
+
+diversity:
+  dino:
+    enable: false
+  dpp:
+    enable: true
+    weight: 5.0
+    backend: "dino"
+
+task:
+  type: "geneval"
+  prompt_start_index: null
+  prompt_end_index: null
+
+multi_step:
+  enable: false

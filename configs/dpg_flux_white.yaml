@@ -1,0 +1,53 @@
+# Paper Tab. 6 (supplementary) - Flux.1-schnell, DPG-Bench, white noise, DPP + hard HPS revert
+# Hyperparameters: same as Tab. 2 flux-schnell white. Only difference: task=dpg.
+# lambda_div=1.5 (DPP), no HPS in loss, lr=6, gc=0.1, n_iters=80, revert at HPS<0.31.
+
+paths:
+  cache_dir: "./cache"
+  save_dir: "./outputs"
+
+model:
+  name: "flux-schnell"
+  dtype: "bfloat16"
+  device_id: 0
+  cpu_offloading: false
+
+optimization:
+  lr: 6.0
+  n_iters: 80
+  n_inference_steps: 1
+  num_samples: 4
+  optim: "sgd"
+  grad_clip: 0.1
+  seed: 42
+  noise_type: "white"
+
+regularization:
+  enable: true
+  weight: 0.01
+
+rewards:
+  # White schnell on DPG: same quality recipe as Tab. 2 white (hard revert at 0.31).
+  hps:
+    enable: false
+    enable_stopping: true
+    enable_revert: true
+    absolute_threshold: 0.31
+  clip:
+    enable: false
+
+diversity:
+  dino:
+    enable: false
+  dpp:
+    enable: true
+    weight: 1.5
+    backend: "dino"
+
+task:
+  type: "dpg"
+  prompt_start_index: null
+  prompt_end_index: null
+
+multi_step:
+  enable: false

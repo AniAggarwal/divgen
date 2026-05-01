@@ -1,0 +1,33 @@
+name: divgen
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pytorch=2.5.1
+  - pytorch-cuda=12.1
+  - pip:
+      # setuptools 81+ removed pkg_resources, which pytorch-lightning 2.2.5 imports.
+      - "setuptools<81"
+      - pytorch-lightning==2.2.5
+      - torchvision==0.20.1
+      # diffusers>=0.37 needed for Flux2KleinPipeline; pulls transformers>=4.46.
+      - diffusers==0.37.1
+      - transformers==4.56.2
+      - tokenizers==0.22.2
+      - huggingface-hub==0.36.2
+      - accelerate==1.10.1
+      - numpy==2.0.1
+      - pillow==11.0.0
+      - tqdm==4.67.3
+      - pyyaml==6.0.3
+      - blobfile==3.1.0
+      - hpsv2==1.2.0
+      - image-reward==1.5
+      # Required transitively by image-reward (its vendored AestheticScore imports `clip`).
+      - openai-clip==1.0.1
+      - xformers==0.0.29.post1
+      - lpips==0.1.4
+      - dreamsim==0.2.1

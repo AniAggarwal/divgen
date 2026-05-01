@@ -1,0 +1,54 @@
+# Paper Tab. 2 - Flux.1-schnell, GenEval, white noise, DPP only with hard HPS revert
+# Hyperparameters: lambda_div=1.5 (DPP), no HPS in loss, lr=6, gc=0.1, n_iters=80
+# Revert: hard HPS < 0.31 (set via CLI flags in slurm script).
+
+paths:
+  cache_dir: "./cache"
+  save_dir: "./outputs"
+
+model:
+  name: "flux-schnell"
+  dtype: "bfloat16"
+  device_id: 0
+  cpu_offloading: false
+
+optimization:
+  lr: 6.0
+  n_iters: 80
+  n_inference_steps: 1
+  num_samples: 4
+  optim: "sgd"
+  grad_clip: 0.1
+  seed: 42
+  noise_type: "white"
+
+regularization:
+  enable: true
+  weight: 0.01
+
+rewards:
+  # White schnell uses no HPS in the loss; quality is enforced via a hard revert
+  # that snaps the latent back if HPS drops below an absolute threshold.
+  hps:
+    enable: false
+    enable_stopping: true
+    enable_revert: true
+    absolute_threshold: 0.31
+  clip:
+    enable: false
+
+diversity:
+  dino:
+    enable: false
+  dpp:
+    enable: true
+    weight: 1.5
+    backend: "dino"
+
+task:
+  type: "geneval"
+  prompt_start_index: null
+  prompt_end_index: null
+
+multi_step:
+  enable: false

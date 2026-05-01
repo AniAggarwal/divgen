@@ -1,0 +1,128 @@
+# ============================================================================
+# T2I-CompBench Configuration (Prepared Version)
+# Configuration for running T2I-CompBench benchmark evaluation
+# Uses the prepared version with 50 prompts per subset (400 total)
+# ============================================================================
+
+# ============================================================================
+# Paths
+# ============================================================================
+paths:
+  cache_dir: "./cache"
+  save_dir: "./outputs"
+
+# ============================================================================
+# Model Configuration
+# ============================================================================
+model:
+  name: "sdxl-turbo"
+  dtype: "float16"
+  device_id: 0
+  cpu_offloading: false
+
+# ============================================================================
+# Optimization Configuration
+# ============================================================================
+optimization:
+  lr: 10.0
+  n_iters: 50
+  n_inference_steps: 1
+  num_samples: 4
+  optim: "sgd"
+  grad_clip: 0.1
+  seed: 0
+  noise_type: "white"
+  noise_exponent: 0
+
+# ============================================================================
+# Regularization
+# ============================================================================
+regularization:
+  enable: true
+  weight: 0.01
+
+# ============================================================================
+# Reward Functions (disabled by default, SLURM controls via --enable_*)
+# ============================================================================
+rewards:
+  hps:
+    enable: false
+    weighting: 5.0
+  
+  imagereward:
+    enable: false
+    weighting: 1.0
+  
+  clip:
+    enable: false
+    weighting: 0.01
+  
+  clip_b32:
+    enable: false
+    weighting: 10
+  
+  pickscore:
+    enable: false
+    weighting: 0.05
+  
+# ============================================================================
+# Diversity Objectives
+# ============================================================================
+diversity:
+  lpips:
+    enable: false
+    weight: 60.0
+    net: "vgg"
+  
+  dino:
+    enable: false
+    weight: 50.0
+    model_name: "facebook/dinov2-base"
+  
+  dreamsim:
+    enable: false
+    weight: 70.0
+  
+  tiny_l2:
+    enable: false
+    weight: 60.0
+    threshold_multiplier: 1.5
+  
+  color:
+    enable: false
+    weight: 60.0
+    threshold_multiplier: 1.5
+  
+  dpp:
+    enable: false
+    weight: 50.0
+    backend: "dino"
+    threshold_multiplier: 4.0
+
+  dpp_patch:
+    enable: false
+    weight: 50.0
+
+  vendi:
+    enable: false
+    weight: 50.0
+    threshold_multiplier: 4.0
+
+# ============================================================================
+# Task Configuration - T2I-CompBench
+# ============================================================================
+task:
+  type: "t2i-compbench"
+  prompt: null  # Not used for t2i-compbench
+  # T2I subset: all, color, shape, texture, spatial, non-spatial, complex, 3d_spatial, numeracy
+  t2i_subset: "all"  # Run all subsets
+  # Optional: limit prompt range within each subset
+  prompt_start_index: null
+  prompt_end_index: null
+
+# ============================================================================
+# Multi-step Model (Optional)
+# ============================================================================
+multi_step:
+  enable: false
+

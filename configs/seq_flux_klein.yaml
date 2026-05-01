@@ -1,0 +1,53 @@
+# Sequential generation on Flux.2-klein.
+# Hyperparameters: lambda_div=15 (DPP), lambda_q=5 (HPS), lr=3, gc=0.15, n_iters=70
+# n_inference_steps=4 (klein is not 1-step; needs more denoising steps than schnell).
+# Sequential mode: 1 sample at a time, 16 samples total.
+# Prompt is supplied by the slurm launcher via --prompt.
+
+paths:
+  cache_dir: "./cache"
+  save_dir: "./outputs"
+
+model:
+  name: "flux-klein"
+  dtype: "bfloat16"
+  device_id: 0
+  cpu_offloading: false
+
+optimization:
+  lr: 3.0
+  n_iters: 70
+  n_inference_steps: 4
+  num_samples: 1
+  sequential_diverse_samples: 16
+  sequential_diversity_objective: "diversity_dpp_patch"
+  optim: "sgd"
+  grad_clip: 0.15
+  seed: 42
+  noise_type: "white"
+
+regularization:
+  enable: true
+  weight: 0.01
+
+rewards:
+  hps:
+    enable: true
+    weighting: 5.0
+  clip:
+    enable: true
+    weighting: 0.01
+
+diversity:
+  dino:
+    enable: false
+  dpp:
+    enable: true
+    weight: 15.0
+
+task:
+  type: "single"
+  # prompt: passed via --prompt on the CLI
+
+multi_step:
+  enable: false

@@ -1,0 +1,10 @@
+*.png
+*.jpg
+logs
+outputs
+*.npy
+cache
+__pycache__
+**/__pycache__/
+**/*.tar*
+**/*.zip

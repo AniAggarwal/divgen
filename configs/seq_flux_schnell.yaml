@@ -1,0 +1,52 @@
+# Paper Fig. 3 (sequential generation) - Flux.1-schnell, white noise
+# Hyperparameters: lambda_div=15 (DPP), lambda_q=1 (HPS), lr=3, gc=0.15, n_iters=25
+# Sequential mode: 1 sample at a time, 16 samples total, each pushed away from prior ones.
+# Prompt is supplied by the slurm launcher via --prompt.
+
+paths:
+  cache_dir: "./cache"
+  save_dir: "./outputs"
+
+model:
+  name: "flux-schnell"
+  dtype: "bfloat16"
+  device_id: 0
+  cpu_offloading: false
+
+optimization:
+  lr: 3.0
+  n_iters: 25
+  n_inference_steps: 1
+  num_samples: 1
+  sequential_diverse_samples: 16
+  sequential_diversity_objective: "diversity_dpp"
+  optim: "sgd"
+  grad_clip: 0.15
+  seed: 42
+  noise_type: "white"
+
+regularization:
+  enable: true
+  weight: 0.01
+
+rewards:
+  hps:
+    enable: true
+    weighting: 1.0
+  clip:
+    enable: false
+
+diversity:
+  dino:
+    enable: false
+  dpp:
+    enable: true
+    weight: 15.0
+    backend: "dino"
+
+task:
+  type: "single"
+  # prompt: passed via --prompt on the CLI
+
+multi_step:
+  enable: true   # render init/best at 4 inference steps (optimization stays at 1)
