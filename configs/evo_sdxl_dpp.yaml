@@ -1,0 +1,19 @@
+# Set-level diversity setting (paper Tab. 2 flavor): DPP diversity + CLIP quality.
+# Shows Vendi rising toward saturation. (Swap CLIP->HPS when disk/HPS available.)
+paths: {cache_dir: ./cache, save_dir: ./outputs}
+model: {name: sdxl-turbo, dtype: float16}
+optimization: {n_inference_steps: 1, noise_type: white, noise_exponent: 0.2}
+rewards:
+  clip: {enable: true, weighting: 1.0}
+diversity:
+  dpp: {enable: true, weight: 1.0, backend: dino}
+task: {type: geneval, prompt_start_index: 0, prompt_end_index: 8}
+evolution:
+  pop_size: 40
+  n_generations: 60
+  set_size: 4
+  self_adaptive: true
+  select_metric: diversity_dpp
+  render_chunk: 160
+  log_all_every: 15
+  seed: 0

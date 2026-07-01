@@ -1,0 +1,45 @@
+# EvoDiv: SDXL-Turbo on GenEval prompts (paper Tab. 1 setting).
+# DINOv2 diversity + CLIP quality, evolved gradient-free with NSGA-II.
+paths:
+  cache_dir: ./cache
+  save_dir: ./outputs
+
+model:
+  name: sdxl-turbo
+  dtype: float16
+
+optimization:
+  n_inference_steps: 1
+  noise_type: white
+  noise_exponent: 0.2
+
+rewards:
+  clip:
+    enable: true
+    weighting: 1.0
+
+diversity:
+  dino:
+    enable: true
+    weight: 1.0
+    model_name: facebook/dinov2-base
+
+task:
+  type: geneval
+  prompt_start_index: 0
+  prompt_end_index: 10
+
+evolution:
+  pop_size: 40
+  n_generations: 60
+  set_size: 4
+  beta: 1.0
+  sigma_init: 0.30
+  rate_init: 0.10
+  self_adaptive: true
+  p_crossover: 0.9
+  render_chunk: 160
+  select_metric: diversity_dino
+  quality_floor_frac: 0.98
+  log_all_every: 15
+  seed: 0

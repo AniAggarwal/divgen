@@ -1,0 +1,17 @@
+# Genetic-programming variant: evolve a program that GENERATES the noise
+# (frequency-op expression trees) rather than the raw noise tensor.
+paths: {cache_dir: ./cache, save_dir: ./outputs}
+model: {name: sdxl-turbo, dtype: float16}
+optimization: {n_inference_steps: 1, noise_type: white, noise_exponent: 0.2}
+rewards:
+  clip: {enable: true, weighting: 1.0}
+diversity:
+  dino: {enable: true, weight: 1.0, model_name: facebook/dinov2-base}
+task: {type: single, prompt: "A photo of a cat"}
+evolution:
+  genome: gp
+  pop_size: 24
+  n_generations: 40
+  set_size: 4
+  render_chunk: 96
+  seed: 0

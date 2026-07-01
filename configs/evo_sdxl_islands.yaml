@@ -1,0 +1,22 @@
+# Island model: 3 prompt-typed subpopulations evolving simultaneously with
+# noise-genome migration (ring). Reports cross-prompt generalization of elites.
+paths: {cache_dir: ./cache, save_dir: ./outputs}
+model: {name: sdxl-turbo, dtype: float16}
+optimization: {n_inference_steps: 1, noise_type: white, noise_exponent: 0.2}
+rewards:
+  clip: {enable: true, weighting: 1.0}
+diversity:
+  dino: {enable: true, weight: 1.0, model_name: facebook/dinov2-base}
+task: {type: single, prompt: "unused in island mode"}
+evolution:
+  pop_size: 24
+  n_generations: 40
+  set_size: 4
+  islands: 3
+  migration_interval: 5
+  migration_size: 2
+  island_prompt_files: "datasets/islands/landscape.txt,datasets/islands/five_word.txt,datasets/islands/gpt_generated.txt"
+  island_eval_prompts: 2
+  self_adaptive: true
+  render_chunk: 192
+  seed: 0
