@@ -8,3 +8,10 @@ __pycache__
 **/__pycache__/
 **/*.tar*
 **/*.zip
+
+# EvoDiv
+outputs/
+outputs_*/
+cache/
+*.pyc
+__pycache__/

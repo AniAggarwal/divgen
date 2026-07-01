@@ -1,0 +1,52 @@
+# EvoDiv: evolutionary noise optimisation, SDXL-Turbo, single prompt.
+# Mirrors the paper's Tab. 1 setting (DINOv2 diversity + CLIP quality),
+# but searches the noise gradient-free with NSGA-II instead of backprop.
+paths:
+  cache_dir: ./cache
+  save_dir: ./outputs
+
+model:
+  name: sdxl-turbo
+  dtype: float16
+
+optimization:
+  n_inference_steps: 1
+  noise_type: white          # generation 0 == the paper's i.i.d. baseline
+  noise_exponent: 0.2        # used when noise_type: pink
+
+# quality objective (Tab. 1): CLIPScore. (ImageReward intentionally unused.)
+rewards:
+  clip:
+    enable: true
+    weighting: 1.0
+
+# diversity objective (Tab. 1): patchwise/CLS DINOv2. Held-out metrics
+# (DreamSim, LPIPS) are computed for the final set to show generalisation.
+diversity:
+  dino:
+    enable: true
+    weight: 1.0
+    model_name: facebook/dinov2-base
+  dreamsim:
+    enable: false
+  lpips:
+    enable: false
+
+task:
+  type: single
+  prompt: "A photo of a cat"
+
+evolution:
+  pop_size: 32
+  n_generations: 40
+  set_size: 4
+  beta: 1.0                 # low-frequency-biased spectral mutation
+  sigma_init: 0.30
+  rate_init: 0.10
+  self_adaptive: true       # each genome evolves its own sigma + mutation rate
+  p_crossover: 0.9
+  render_chunk: 128
+  select_metric: diversity_dino
+  quality_floor_frac: 0.98
+  log_all_every: 10
+  seed: 0
