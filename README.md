@@ -26,6 +26,14 @@ UC Berkeley · University of Tübingen, Tübingen AI Center · TU Munich, MCML
 
 ---
 
+
+> ### Fork addition: [EvoDiv - evolutionary noise optimization](evodiv/README.md)
+> This fork reformulates the paper's gradient-based noise optimization as a **gradient-free
+> multi-objective evolutionary search (NSGA-II)**, transplanting the [ECAD](https://research.aniaggarwal.com/ecad)
+> genetic-algorithm framework. Quality vs. diversity becomes a Pareto front; no backprop through the
+> diffusion model. See [`evodiv/README.md`](evodiv/README.md) and [`EVODIV_RESULTS.md`](EVODIV_RESULTS.md).
+
+
 ## Overview
 
 We optimize the initial noise of pretrained diffusion models to recover from mode collapse, producing diverse images per prompt. We support batched optimization over a set of 4 images, and sequential generation that generates a diverse image set one sample at a time.
