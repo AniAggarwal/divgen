@@ -142,13 +142,14 @@ rows from Harrington et al.\ Tab.~1 (their eval harness, 552 prompts); our rows
 use the official repository's own metric code over \numPrompts{} prompts.
 Diversity metrics: higher is better.}
 \label{tab:main}
-\begin{tabular}{lccccc}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}lcccc@{}}
 \toprule
 Method & DINO & DreamSim & LPIPS & CLIP \\
 \midrule
 i.i.d. & \dinoIID & 0.249 & 0.642 & 0.335 \\
-Parmar et al. & \dinoParmar & 0.331 & 0.682 & 0.333 \\
-Ours (gradient) & \dinoGrad & \dsGrad & \lpipsGrad & \clipGrad \\
+Parmar et al.~\cite{parmar2025scaling} & \dinoParmar & 0.331 & 0.682 & 0.333 \\
+Harrington et al.\ (gradient) & \dinoGrad & \dsGrad & \lpipsGrad & \clipGrad \\
 \midrule
 Bred, gen.~0 (i.i.d.) & \dinoOursInit & \dsOursInit & \lpipsOursInit & \clipOursInit \\
 Bred, final & \textbf{\dinoOurs} & \textbf{\dsOurs} & \lpipsOurs & \clipOurs \\
