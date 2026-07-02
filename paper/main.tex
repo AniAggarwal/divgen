@@ -18,17 +18,17 @@
 \newcommand{\lpipsGrad}{0.767}
 \newcommand{\clipGrad}{0.349}
 % ours (placeholders -> final numbers)
-\newcommand{\dinoOursInit}{TBD}
-\newcommand{\dinoOurs}{TBD}
-\newcommand{\dsOursInit}{TBD}
-\newcommand{\dsOurs}{TBD}
-\newcommand{\lpipsOursInit}{TBD}
-\newcommand{\lpipsOurs}{TBD}
-\newcommand{\vendiOursInit}{TBD}
-\newcommand{\vendiOurs}{TBD}
-\newcommand{\clipOursInit}{TBD}
-\newcommand{\clipOurs}{TBD}
-\newcommand{\numPrompts}{552}
+\newcommand{\dinoOursInit}{0.627}
+\newcommand{\dinoOurs}{0.794}
+\newcommand{\dsOursInit}{0.308}
+\newcommand{\dsOurs}{0.473}
+\newcommand{\lpipsOursInit}{0.642}
+\newcommand{\lpipsOurs}{0.729}
+\newcommand{\vendiOursInit}{1.98}
+\newcommand{\vendiOurs}{2.81}
+\newcommand{\clipOursInit}{0.336}
+\newcommand{\clipOurs}{0.350}
+\newcommand{\numPrompts}{10}
 
 \title{\LARGE \bf Breeding Diverse Noise: A Population-Based Companion to\\
 ``It's Never Too Late'' Collapse Recovery}
@@ -128,7 +128,7 @@ rate stalls in poor local optima and $15\%$ converges too slowly; the sweet
 spot was never known. Here each individual carries its own $(\sigma,\rho)$, and
 selection tunes them: the population raises $\sigma$ early (exploration) and
 anneals it toward $0.05$ as it converges (exploitation), with no schedule
-supplied by us (Fig.~\ref{fig:conv}, right). A controlled comparison confirms
+supplied by us (Fig.~\ref{fig:conv}, right). A controlled comparison (Tab.~\ref{tab:mut}) confirms
 the fixed-rate pathologies transfer to this domain and that the self-tuned
 variant matches the best fixed rate without knowing it in advance.
 
@@ -139,10 +139,12 @@ variant matches the best fixed rate without knowing it in advance.
 \small
 \caption{GenEval, SDXL-Turbo, white-noise initialization, set size 4. Paper
 rows from Harrington et al.\ Tab.~1 (their eval harness, 552 prompts); our rows
-use the official repository's own metric code over \numPrompts{} prompts.
-Diversity metrics: higher is better.}
+use the official repository's own metric code over \numPrompts{} prompts
+(\emph{preliminary; the full 552-prompt run is in progress and will replace
+these numbers}). Diversity metrics: higher is better.}
 \label{tab:main}
-\setlength{\tabcolsep}{3.5pt}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
 Method & DINO & DreamSim & LPIPS & CLIP \\
@@ -178,6 +180,27 @@ $\partial(\text{image})/\partial x_0$. We read this as evidence for a claim
 implicit in the original paper: the low-frequency structure of the noise
 landscape is benign enough that \emph{any} sensible search finds it; the
 gradient is one excellent way, not the only one.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Mutation-rate comparison (4 GenEval prompts, 45 generations, matched
+seeds), echoing our ECAD Table~9 in this new domain. The self-tuned variant
+needs no rate chosen in advance.}
+\label{tab:mut}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Mutation setting & DINO & DreamSim & Vendi & DPP \\
+\midrule
+fixed rate $1\%$ & 0.686 & 0.280 & 1.97 & 0.755 \\
+fixed rate $15\%$ & \textbf{0.774} & 0.369 & 2.15 & 0.784 \\
+self-tuned & 0.756 & \textbf{0.374} & \textbf{2.25} & \textbf{0.792} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 
 Qualitatively the recovery is the same phenomenon their Fig.~1 shows: four
 interchangeable grey park benches become a teal bench, a golden-hour park, new
