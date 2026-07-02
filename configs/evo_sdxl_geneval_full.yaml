@@ -1,0 +1,55 @@
+# EvoDiv FULL GenEval run (all 552 prompts) — paper Tab. 1 setting,
+# B200-optimized: TAESD surrogate decode for search generations (exact
+# full-VAE at gen0 / every 10 gens / final selection), batched DINO+CLIP
+# scoring, compiled UNet, early stopping with ambitious targets.
+paths:
+  cache_dir: ./cache
+  save_dir: ./outputs
+
+model:
+  name: sdxl-turbo
+  dtype: float16
+
+optimization:
+  n_inference_steps: 1
+  noise_type: white
+  noise_exponent: 0.2
+
+rewards:
+  clip:
+    enable: true
+    weighting: 1.0
+
+diversity:
+  dino:
+    enable: true
+    weight: 1.0
+    model_name: facebook/dinov2-base
+
+task:
+  type: geneval          # all 552 prompts (no start/end index)
+
+evolution:
+  pop_size: 40
+  n_generations: 60
+  set_size: 4
+  beta: 1.0
+  sigma_init: 0.30
+  rate_init: 0.10
+  self_adaptive: true
+  p_crossover: 0.9
+  render_chunk: 160
+  select_metric: diversity_dino
+  quality_floor_frac: 0.98
+  log_all_every: 0             # held-out metrics only at final selection
+  seed: 0
+  # early stopping: aim ABOVE the paper's gradient result (0.784 avg DINO)
+  early_stop_patience: 12
+  early_stop_min_delta: 0.002
+  target_diversity: 0.82
+  target_quality_frac: 1.0     # quality must be >= gen0 mean before target-stop
+  # resume-safe + B200 fast paths
+  skip_existing: true
+  use_surrogate: true
+  exact_every: 10
+  compile_model: true

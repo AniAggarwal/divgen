@@ -118,6 +118,13 @@ def main(cfg: EvoConfig):
         seed=cfg.evolution.seed, device=device, model_dtype=dtype,
         render_chunk=cfg.evolution.render_chunk, multi_apply_fn=multi_apply_fn,
     )
+    if cfg.evolution.use_surrogate:
+        evaluator.enable_surrogate(cfg.paths.cache_dir)
+        log("Surrogate decoder (TAESD) enabled for search generations "
+            f"(exact re-anchor every {cfg.evolution.exact_every} gens).")
+    if cfg.evolution.compile_model and hasattr(pipe, "unet"):
+        pipe.unet = torch.compile(pipe.unet)
+        log("torch.compile enabled for UNet.")
 
     outdir = os.path.join(cfg.paths.save_dir, "evodiv", cfg.model.name, cfg.task.type)
     os.makedirs(outdir, exist_ok=True)
@@ -137,6 +144,10 @@ def main(cfg: EvoConfig):
     summary = {"init": {}, "best": {}}
     n_done = 0
     for pi, prompt in enumerate(prompts):
+        p_out = os.path.join(outdir, f"{pi:04d}_{prompt[:60].replace('/', '_')}")
+        if cfg.evolution.skip_existing and os.path.exists(os.path.join(p_out, "history.json")):
+            log(f"[prompt {pi}] history.json exists, skipping (resume mode)")
+            continue
         gen = torch.Generator(device=device).manual_seed(cfg.evolution.seed + pi)
         log(f"\n=== prompt {pi + 1}/{len(prompts)}: {prompt!r} ===")
 
@@ -157,6 +168,11 @@ def main(cfg: EvoConfig):
                 pop, evaluator, prompt, cfg.evolution.n_generations, gen,
                 p_crossover=cfg.evolution.p_crossover, log_fn=log,
                 log_all_every=cfg.evolution.log_all_every,
+                early_stop_patience=cfg.evolution.early_stop_patience,
+                early_stop_min_delta=cfg.evolution.early_stop_min_delta,
+                target_diversity=cfg.evolution.target_diversity,
+                target_quality_frac=cfg.evolution.target_quality_frac,
+                exact_every=cfg.evolution.exact_every,
             )
 
         hist = result.history

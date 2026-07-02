@@ -126,11 +126,25 @@ def evolve(
     p_crossover: float = 0.9,
     log_fn: Optional[Callable[[str], None]] = None,
     log_all_every: int = 0,
+    early_stop_patience: int = 0,
+    early_stop_min_delta: float = 0.002,
+    target_diversity: Optional[float] = None,
+    target_quality: Optional[float] = None,
+    target_quality_frac: Optional[float] = None,
+    exact_every: int = 10,
 ) -> EvoResult:
-    """Run NSGA-II for ``n_generations`` on a single prompt."""
+    """Run NSGA-II for up to ``n_generations`` on a single prompt.
+
+    Early termination (both optional, for large sweeps):
+      * patience: stop after ``early_stop_patience`` generations without the
+        best diversity improving by ``early_stop_min_delta``;
+      * targets: stop once ``best_diversity >= target_diversity`` AND
+        ``best_quality >= target_quality`` (if targets given).
+    """
     log = log_fn or (lambda s: None)
     spec = pop.spec
-    evaluator.evaluate(pop, prompt, log_all=True)
+    # gen 0 = the reported i.i.d. baseline -> always exact (full VAE)
+    evaluator.evaluate(pop, prompt, log_all=True, exact=True)
     history: List[Dict[str, float]] = []
 
     def record(gen: int):
@@ -163,6 +177,10 @@ def evolve(
         )
 
     record(0)
+    if target_quality is None and target_quality_frac is not None:
+        target_quality = target_quality_frac * history[0]["mean_quality"]
+    best_div_seen = history[0]["best_diversity"]
+    stale = 0
     for gen in range(1, n_generations + 1):
         rank, cd, _ = rank_and_crowding(pop.F)
         n_off = pop.size
@@ -176,13 +194,33 @@ def evolve(
         offspring = Population(child_lat, child_ls, child_lr, spec)
 
         log_all = (log_all_every > 0 and gen % log_all_every == 0) or (gen == n_generations)
-        evaluator.evaluate(offspring, prompt, log_all=log_all)
+        # offspring are scored with the surrogate decoder (if loaded)
+        evaluator.evaluate(offspring, prompt, log_all=log_all, exact=False)
 
         combined = Population.concat(pop, offspring)
-        # make sure combined has log_all raw fields for the survivors we might report
         pop = survival(combined, pop.size)
+        # periodic re-anchoring: re-score survivors with the exact decoder so
+        # surrogate noise (mainly on the quality axis) cannot accumulate
+        if exact_every and gen % exact_every == 0:
+            evaluator.evaluate(pop, prompt, log_all=False, exact=True)
         record(gen)
 
-    # ensure final population has full held-out metrics for reporting
-    evaluator.evaluate(pop, prompt, log_all=True)
+        rec = history[-1]
+        if rec["best_diversity"] > best_div_seen + early_stop_min_delta:
+            best_div_seen = rec["best_diversity"]
+            stale = 0
+        else:
+            stale += 1
+        if (target_diversity is not None and rec["best_diversity"] >= target_diversity
+                and (target_quality is None or rec["best_quality"] >= target_quality)):
+            log(f"[early stop] targets reached at gen {gen} "
+                f"(div {rec['best_diversity']:.4f} >= {target_diversity}, "
+                f"qual {rec['best_quality']:.4f})")
+            break
+        if early_stop_patience and stale >= early_stop_patience:
+            log(f"[early stop] no diversity improvement for {stale} generations (gen {gen})")
+            break
+
+    # final selection must be exact + carry held-out metrics for reporting
+    evaluator.evaluate(pop, prompt, log_all=True, exact=True)
     return EvoResult(population=pop, history=history)

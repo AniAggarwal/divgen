@@ -52,6 +52,20 @@ class EvolutionConfig:
     select_metric: str = "diversity_dino"   # raw metric maximised when picking the winner
     quality_floor_frac: float = 0.98        # winner must keep >= frac * gen0 mean quality
 
+    # early stopping (large sweeps); 0 / None disables
+    early_stop_patience: int = 0            # gens without best-div improvement before stopping
+    early_stop_min_delta: float = 0.002
+    target_diversity: Optional[float] = None
+    target_quality_frac: Optional[float] = None  # target quality = frac * gen0 MEAN quality
+
+    # resume: skip prompts whose history.json already exists
+    skip_existing: bool = True
+
+    # B200 throughput options
+    use_surrogate: bool = False       # TAESD decode during search gens (exact at gen0/anchors/final)
+    exact_every: int = 10             # re-anchor survivors with the exact decoder every k gens
+    compile_model: bool = False       # torch.compile the UNet
+
     # logging
     log_all_every: int = 0            # also compute held-out metrics every k gens (0 = only last)
 
