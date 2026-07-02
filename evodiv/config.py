@@ -40,6 +40,7 @@ class EvolutionConfig:
     tau_sigma: float = 0.30
     tau_rate: float = 0.30
     p_crossover: float = 0.9
+    repair_ops: bool = True           # chi_d-norm repair after operators (ablatable)
 
     # island model (requested idea 1); prompt sets are comma-separated files or names
     islands: int = 1

@@ -60,6 +60,7 @@ class GenomeSpec:
     tau_sigma: float = 0.30               # log-normal self-adaptation rate for sigma
     tau_rate: float = 0.30                # logit self-adaptation rate for the mutation rate
     self_adaptive: bool = True            # if False, sigma/rate stay fixed at their init values
+    repair_ops: bool = True               # chi_d-norm repair after mutation/crossover (ablatable)
 
     @property
     def dim(self) -> int:
@@ -259,7 +260,8 @@ def mutate(
     mask = (torch.rand(latents.shape, device=device, generator=generator) < rate).float()
 
     child = latents + mask * sigma * delta
-    child = repair(child)
+    if spec.repair_ops:
+        child = repair(child)
     return child, log_sigma, logit_rate
 
 
@@ -293,7 +295,8 @@ def crossover(
     take_b = take_b & gate
     sel = take_b.view(n, B, 1, 1, 1).float()
     child = la * (1.0 - sel) + lb * sel
-    child = repair(child)
+    if spec.repair_ops:
+        child = repair(child)
 
     # intermediate recombination of strategy params, gated the same way
     g = gate.view(n).float()

@@ -17,7 +17,7 @@ import glob
 import json
 import os
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 # Paper's reported SDXL-Turbo / GenEval numbers (Tab. 1, white noise) for context.
 # These use the paper's own eval harness averaged over 552 prompts; our single-GPU
@@ -80,41 +80,88 @@ def markdown_table(agg) -> str:
     return "\n".join(lines)
 
 
-def plot_convergence(histories: List[dict], out_png: str):
+# Styling follows the ECAD (editing-dits) notebooks: seaborn whitegrid,
+# 2.5-width lines with black-edged markers, dashed black reference lines,
+# "#1f77b4" blue for ours, constrained layout.
+ECAD_COLORS = {
+    "ours": "#1f77b4",      # blue   (matches "Ours" in the ECAD frontier plots)
+    "mean": "#7f7f7f",      # gray
+    "quality": "#2ca02c",   # green
+    "sigma": "#d62728",     # red
+    "rate": "#ff7f0e",      # orange
+}
+
+
+def plot_convergence(histories: List[dict], out_png: str,
+                     ref_lines: Optional[Dict[str, float]] = None):
+    """Convergence figure in the ECAD notebook style.
+
+    ref_lines: optional {label: y} dashed black reference lines for the
+    diversity panel (e.g. the paper's gradient result and i.i.d. baseline).
+    """
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    import seaborn as sns
 
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4.2))
-    # average per-generation curves across prompts (truncate to shortest)
-    min_len = min(len(h["history"]) for h in histories)
-    gens = list(range(min_len))
+    sns.set_theme(style="whitegrid", context="talk", font_scale=0.75)
+
+    fig, axes = plt.subplots(1, 3, figsize=(15, 4.4), layout="constrained")
+    # early-stopped prompts hold their final value (they stopped because they
+    # converged), so curves are averaged over ALL prompts at every generation
+    max_len = max(len(h["history"]) for h in histories)
+    gens = list(range(max_len))
+    mark_every = max(1, max_len // 10)
+    marker_kw = dict(marker="o", markersize=6, markeredgecolor="black",
+                     markeredgewidth=1.0, markevery=mark_every)
 
     def avg_curve(key):
-        return [sum(h["history"][g][key] for h in histories) / len(histories) for g in range(min_len)]
+        out = []
+        for g in range(max_len):
+            vals = [h["history"][min(g, len(h["history"]) - 1)][key] for h in histories]
+            out.append(sum(vals) / len(vals))
+        return out
 
-    axes[0].plot(gens, avg_curve("best_diversity"), label="best", lw=2)
-    axes[0].plot(gens, avg_curve("mean_diversity"), label="mean", ls="--")
-    axes[0].set_title("Diversity (optimized objective)"); axes[0].set_xlabel("generation")
-    axes[0].set_ylabel("diversity"); axes[0].legend(); axes[0].grid(alpha=0.3)
+    ax = axes[0]
+    ax.plot(gens, avg_curve("best_diversity"), label="best", lw=2.5, alpha=0.9,
+            color=ECAD_COLORS["ours"], zorder=3, **marker_kw)
+    ax.plot(gens, avg_curve("mean_diversity"), label="population mean", lw=2.0,
+            ls="--", alpha=0.9, color=ECAD_COLORS["mean"], zorder=2)
+    for label, y in (ref_lines or {}).items():
+        ax.axhline(y=y, color="black", linestyle="--", linewidth=1.5, alpha=0.8)
+        ax.annotate(label, xy=(0.02, y), xycoords=("axes fraction", "data"),
+                    fontsize=10, va="bottom")
+    ax.set_title("Diversity (bred objective)")
+    ax.set_xlabel("generation"); ax.set_ylabel("DINOv2 diversity")
+    ax.legend(frameon=True)
 
-    axes[1].plot(gens, avg_curve("best_quality"), label="best", lw=2, color="tab:green")
-    axes[1].plot(gens, avg_curve("mean_quality"), label="mean", ls="--", color="tab:green")
-    axes[1].set_title("Quality (constraint)"); axes[1].set_xlabel("generation")
-    axes[1].set_ylabel("quality reward"); axes[1].legend(); axes[1].grid(alpha=0.3)
+    ax = axes[1]
+    ax.plot(gens, avg_curve("best_quality"), label="best", lw=2.5, alpha=0.9,
+            color=ECAD_COLORS["quality"], zorder=3, **marker_kw)
+    ax.plot(gens, avg_curve("mean_quality"), label="population mean", lw=2.0,
+            ls="--", alpha=0.9, color=ECAD_COLORS["mean"], zorder=2)
+    ax.set_title("Quality (constraint)")
+    ax.set_xlabel("generation"); ax.set_ylabel("CLIPScore")
+    ax.legend(frameon=True)
 
+    ax = axes[2]
     if "mean_sigma" in histories[0]["history"][0]:
-        axes[2].plot(gens, avg_curve("mean_sigma"), label="mean sigma", color="tab:red")
-        axes[2].plot(gens, avg_curve("mean_rate"), label="mean rate", color="tab:purple")
-        axes[2].set_title("Self-adaptive strategy params"); axes[2].set_xlabel("generation")
-        axes[2].legend(); axes[2].grid(alpha=0.3)
+        ax.plot(gens, avg_curve("mean_sigma"), label=r"step $\sigma$", lw=2.5,
+                alpha=0.9, color=ECAD_COLORS["sigma"], zorder=3, **marker_kw)
+        ax.plot(gens, avg_curve("mean_rate"), label=r"rate $\rho$", lw=2.5,
+                alpha=0.9, color=ECAD_COLORS["rate"], zorder=2,
+                marker="s", markersize=6, markeredgecolor="black",
+                markeredgewidth=1.0, markevery=mark_every)
+        ax.set_title("Self-tuned strategy parameters")
+        ax.set_xlabel("generation"); ax.set_ylabel("value")
     else:
-        axes[2].plot(gens, avg_curve("pareto_size"), label="Pareto size", color="tab:orange")
-        axes[2].set_title("Pareto front size"); axes[2].set_xlabel("generation")
-        axes[2].legend(); axes[2].grid(alpha=0.3)
+        ax.plot(gens, avg_curve("pareto_size"), label="Pareto size", lw=2.5,
+                alpha=0.9, color=ECAD_COLORS["rate"], **marker_kw)
+        ax.set_title("Pareto front size"); ax.set_xlabel("generation")
+    ax.legend(frameon=True)
 
-    fig.tight_layout()
-    fig.savefig(out_png, dpi=120)
+    sns.despine(fig)
+    fig.savefig(out_png, dpi=150)
     print(f"wrote {out_png}")
 
 
@@ -131,7 +178,9 @@ def main():
     print(table)
     with open(args.out + ".md", "w") as f:
         f.write(table + "\n")
-    plot_convergence(hists, args.out + ".png")
+    refs = {"Harrington et al. (gradient)": PAPER_TAB1_WHITE["Ours(grad)"]["DINO"],
+            "i.i.d. (paper)": PAPER_TAB1_WHITE["i.i.d."]["DINO"]}
+    plot_convergence(hists, args.out + ".png", ref_lines=refs)
 
 
 if __name__ == "__main__":

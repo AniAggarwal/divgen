@@ -4,6 +4,7 @@
 \usepackage{times}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{multirow}
 \usepackage{amsmath}
 \usepackage{xcolor}
 \usepackage[colorlinks=true,linkcolor=black,citecolor=blue,urlcolor=blue]{hyperref}
@@ -69,7 +70,7 @@ costs, and offer it as a companion, not a replacement, to the original method.
 
 \section{Appreciation, and a question}
 
-Three ideas in Harrington et al.\ strike us as durable. First, that
+Three ideas in Harrington et al.\ do a lot of work. First, that
 inference-time diversity is recoverable at all --- that a collapsed model still
 \emph{contains} its diversity, reachable through the initial noise
 $x_0$. Second, the frequency analysis (their Fig.~9): optimization acts almost
@@ -184,19 +185,37 @@ gradient is one excellent way, not the only one.
 \begin{table}[t]
 \centering
 \small
-\caption{Mutation-rate comparison (4 GenEval prompts, 45 generations, matched
-seeds), echoing our ECAD Table~9 in this new domain. The self-tuned variant
-needs no rate chosen in advance.}
+\caption{Design ablations (six GenEval prompts, 45 generations, population 32,
+matched seeds; defaults marked $\star$). \emph{Placeholder numbers pending the
+queued ablation suite; the mutation-rate rows are from an earlier matched run.}}
 \label{tab:mut}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lcccc@{}}
+\begin{tabular}{@{}llccc@{}}
 \toprule
-Mutation setting & DINO & DreamSim & Vendi & DPP \\
+Group & Variant & DINO & DreamSim & CLIP \\
 \midrule
-fixed rate $1\%$ & 0.686 & 0.280 & 1.97 & 0.755 \\
-fixed rate $15\%$ & \textbf{0.774} & 0.369 & 2.15 & 0.784 \\
-self-tuned & 0.756 & \textbf{0.374} & \textbf{2.25} & \textbf{0.792} \\
+\multirow{3}{*}{mutation rate}
+ & fixed $1\%$ & 0.686 & 0.280 & 0.339 \\
+ & fixed $15\%$ & 0.774 & 0.369 & 0.336 \\
+ & self-tuned $\star$ & 0.756 & 0.374 & 0.336 \\
+\midrule
+\multirow{3}{*}{spectral bias}
+ & $\beta{=}0$ (white) & TBD & TBD & TBD \\
+ & $\beta{=}1$ $\star$ & TBD & TBD & TBD \\
+ & $\beta{=}2$ & TBD & TBD & TBD \\
+\midrule
+\multirow{2}{*}{crossover}
+ & off & TBD & TBD & TBD \\
+ & set-level $\star$ & TBD & TBD & TBD \\
+\midrule
+\multirow{2}{*}{$\chi_d$ repair}
+ & off & TBD & TBD & TBD \\
+ & every op.\ $\star$ & TBD & TBD & TBD \\
+\midrule
+\multirow{2}{*}{initialization}
+ & white $\star$ & TBD & TBD & TBD \\
+ & pink $\alpha{=}0.2$ & TBD & TBD & TBD \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -228,7 +247,7 @@ can breed a small symbolic \emph{program} (compositions of white noise, pink
 filtering, and low-frequency gratings) that generates it. Program search
 reaches the highest raw diversity we observe (DINO $0.886$) at a real cost in
 prompt fidelity --- it maps the far end of the quality--diversity front --- and
-its early winners rediscover low-frequency structure on their own, a pleasing
+its early winners rediscover low-frequency structure on their own, an
 independent confirmation of the paper's spectral analysis.
 
 \section{What each method offers}
@@ -252,13 +271,13 @@ it improves theirs.
 
 \section{Closing}
 
-This note exists because the original paper's analysis was clear enough to
-build on in a week: the frequency finding told us what mutations to propose,
-the norm regularizer told us what constraint to repair to, and the set-level
-metrics told us what to select for. That is what a good paper does. We offer
-the population view back as a companion --- same landscape, second vehicle ---
-with code, configurations, and scaling scripts in the fork above, in the hope
-it is useful to the authors' future work on collapse recovery.
+Each of the original paper's findings translated directly into a design
+decision here: the frequency analysis told us what mutations to propose, the
+norm regularizer told us what constraint to repair to, and the set-level
+metrics told us what to select for. We offer the population view back as a
+companion --- same landscape, second vehicle --- with code, configurations,
+and scaling scripts in the fork above, in the hope it is useful to the
+authors' future work on collapse recovery.
 
 {\small
 \begin{thebibliography}{9}

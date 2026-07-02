@@ -61,6 +61,7 @@ def _latent_spec(cfg, pipe, set_size: int) -> GenomeSpec:
         rate_bounds=(cfg.evolution.rate_min, cfg.evolution.rate_max),
         tau_sigma=cfg.evolution.tau_sigma, tau_rate=cfg.evolution.tau_rate,
         self_adaptive=cfg.evolution.self_adaptive,
+        repair_ops=cfg.evolution.repair_ops,
     )
 
 
