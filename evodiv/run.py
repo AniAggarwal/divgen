@@ -140,17 +140,24 @@ def main(cfg: EvoConfig):
         gen = torch.Generator(device=device).manual_seed(cfg.evolution.seed + pi)
         log(f"\n=== prompt {pi + 1}/{len(prompts)}: {prompt!r} ===")
 
-        pop = init_population(
-            spec, cfg.evolution.pop_size, device,
-            noise_type=cfg.optimization.noise_type,
-            noise_exponent=cfg.optimization.noise_exponent,
-            seed=cfg.evolution.seed + pi * 100003,
-        )
-        result = evolve(
-            pop, evaluator, prompt, cfg.evolution.n_generations, gen,
-            p_crossover=cfg.evolution.p_crossover, log_fn=log,
-            log_all_every=cfg.evolution.log_all_every,
-        )
+        if cfg.evolution.genome == "gp":
+            from evodiv.gp_noise import evolve_gp
+            result = evolve_gp(
+                spec, evaluator, prompt, cfg.evolution.pop_size,
+                cfg.evolution.n_generations, device, gen, log_fn=log,
+            )
+        else:
+            pop = init_population(
+                spec, cfg.evolution.pop_size, device,
+                noise_type=cfg.optimization.noise_type,
+                noise_exponent=cfg.optimization.noise_exponent,
+                seed=cfg.evolution.seed + pi * 100003,
+            )
+            result = evolve(
+                pop, evaluator, prompt, cfg.evolution.n_generations, gen,
+                p_crossover=cfg.evolution.p_crossover, log_fn=log,
+                log_all_every=cfg.evolution.log_all_every,
+            )
 
         hist = result.history
         gen0 = hist[0]
