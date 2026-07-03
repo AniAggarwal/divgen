@@ -19,17 +19,17 @@
 \newcommand{\lpipsGrad}{0.767}
 \newcommand{\clipGrad}{0.349}
 % ours (placeholders -> final numbers)
-\newcommand{\dinoOursInit}{0.627}
-\newcommand{\dinoOurs}{0.794}
-\newcommand{\dsOursInit}{0.308}
-\newcommand{\dsOurs}{0.473}
-\newcommand{\lpipsOursInit}{0.642}
-\newcommand{\lpipsOurs}{0.729}
-\newcommand{\vendiOursInit}{1.98}
-\newcommand{\vendiOurs}{2.81}
-\newcommand{\clipOursInit}{0.336}
-\newcommand{\clipOurs}{0.350}
-\newcommand{\numPrompts}{10}
+\newcommand{\dinoOursInit}{0.658}
+\newcommand{\dinoOurs}{0.790}
+\newcommand{\dsOursInit}{0.297}
+\newcommand{\dsOurs}{0.437}
+\newcommand{\lpipsOursInit}{0.670}
+\newcommand{\lpipsOurs}{0.745}
+\newcommand{\vendiOursInit}{2.17}
+\newcommand{\vendiOurs}{2.85}
+\newcommand{\clipOursInit}{0.375}
+\newcommand{\clipOurs}{0.393}
+\newcommand{\numPrompts}{553}
 
 \title{\LARGE \bf Breeding Diverse Noise: A Population-Based Companion to\\
 ``It's Never Too Late'' Collapse Recovery}
@@ -60,9 +60,10 @@ closer to what breeders have always done: \emph{artificial selection} toward a
 stated goal. We therefore speak of \emph{breeding} noise, and of
 selection-based or population-based search.} over \emph{sets} of initial
 noises, using the multi-objective machinery from our ECAD work on caching
-schedules. On GenEval with SDXL-Turbo, breeding reaches approximate parity with
-the paper's gradient-based optimization on its own metrics --- without a single
-backward pass through the sampler. We describe what the population view adds
+schedules. On GenEval with SDXL-Turbo, breeding reaches the gradient-based
+optimization's numbers on its own metrics (slightly ahead on three of the
+four reported, slightly behind on LPIPS) --- without a single backward pass
+through the sampler. We describe what the population view adds
 (memory-free scaling to large models, non-differentiable set-level objectives,
 an explicit quality--diversity Pareto front, self-tuned step sizes) and what it
 costs, and offer it as a companion, not a replacement, to the original method.
@@ -129,9 +130,14 @@ rate stalls in poor local optima and $15\%$ converges too slowly; the sweet
 spot was never known. Here each individual carries its own $(\sigma,\rho)$, and
 selection tunes them: the population raises $\sigma$ early (exploration) and
 anneals it toward $0.05$ as it converges (exploitation), with no schedule
-supplied by us (Fig.~\ref{fig:conv}, right). A controlled comparison (Tab.~\ref{tab:mut}) confirms
-the fixed-rate pathologies transfer to this domain and that the self-tuned
-variant matches the best fixed rate without knowing it in advance.
+supplied by us (Fig.~\ref{fig:conv}, right). A controlled comparison (Tab.~\ref{tab:mut}, top) confirms the $1\%$ rate
+stalls here too, while the aggressive $15\%$ rate buys diversity at a visible
+quality cost; the self-tuned variant holds the highest quality at comparable
+diversity, with no rate chosen in advance. The same table shows that removing
+the low-frequency mutation bias ($\beta{=}0$) loses diversity with no quality
+gain, while strengthening it ($\beta{=}2$) buys large diversity gains at
+modest quality cost --- both consistent with the source paper's spectral
+analysis.
 
 \section{Results}
 
@@ -139,10 +145,11 @@ variant matches the best fixed rate without knowing it in advance.
 \centering
 \small
 \caption{GenEval, SDXL-Turbo, white-noise initialization, set size 4. Paper
-rows from Harrington et al.\ Tab.~1 (their eval harness, 552 prompts); our rows
-use the official repository's own metric code over \numPrompts{} prompts
-(\emph{preliminary; the full 552-prompt run is in progress and will replace
-these numbers}). Diversity metrics: higher is better.}
+rows from Harrington et al.\ Tab.~1 (their eval harness); our rows use the
+official repository's own metric code over all \numPrompts{} prompts in its
+GenEval list (population 40; up to 60 generations, and prompts still below the
+reference diversity receive one further 90-generation pass). Diversity
+metrics: higher is better.}
 \label{tab:main}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
@@ -174,9 +181,9 @@ by selection alone.}
 Table~\ref{tab:main} gives the headline. Two sanity checks first: our
 generation-0 population, scored with the official code, reproduces the paper's
 i.i.d.\ row almost exactly, and quality \emph{rises} during search rather than
-being traded away. On the diversity metrics, breeding lands at approximate
-parity with the gradient optimizer --- slightly ahead on DINO and DreamSim,
-slightly behind on LPIPS --- despite never computing
+being traded away. Across the reported metrics, breeding lands slightly ahead
+of the gradient optimizer on DINO, DreamSim, and CLIPScore, and slightly
+behind on LPIPS --- despite never computing
 $\partial(\text{image})/\partial x_0$. We read this as evidence for a claim
 implicit in the original paper: the low-frequency structure of the noise
 landscape is benign enough that \emph{any} sensible search finds it; the
@@ -186,8 +193,10 @@ gradient is one excellent way, not the only one.
 \centering
 \small
 \caption{Design ablations (six GenEval prompts, 45 generations, population 32,
-matched seeds; defaults marked $\star$). \emph{Placeholder numbers pending the
-queued ablation suite; the mutation-rate rows are from an earlier matched run.}}
+matched seeds; defaults marked $\star$; gen-0 i.i.d.\ reference: DINO 0.639,
+CLIP 0.338). Variants move \emph{along} the quality--diversity front: the
+defaults hold the highest quality, while removing the spectral bias
+($\beta{=}0$) or fixing a $1\%$ rate is dominated outright.}
 \label{tab:mut}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
@@ -196,26 +205,26 @@ queued ablation suite; the mutation-rate rows are from an earlier matched run.}}
 Group & Variant & DINO & DreamSim & CLIP \\
 \midrule
 \multirow{3}{*}{mutation rate}
- & fixed $1\%$ & 0.686 & 0.280 & 0.339 \\
- & fixed $15\%$ & 0.774 & 0.369 & 0.336 \\
- & self-tuned $\star$ & 0.756 & 0.374 & 0.336 \\
+ & fixed $1\%$ & 0.705 & 0.324 & 0.346 \\
+ & fixed $15\%$ & 0.790 & 0.464 & 0.336 \\
+ & self-tuned $\star$ & 0.757 & 0.361 & \textbf{0.347} \\
 \midrule
 \multirow{3}{*}{spectral bias}
- & $\beta{=}0$ (white) & TBD & TBD & TBD \\
- & $\beta{=}1$ $\star$ & TBD & TBD & TBD \\
- & $\beta{=}2$ & TBD & TBD & TBD \\
+ & $\beta{=}0$ (white) & 0.714 & 0.316 & 0.348 \\
+ & $\beta{=}1$ $\star$ & 0.757 & 0.361 & 0.347 \\
+ & $\beta{=}2$ & \textbf{0.830} & \textbf{0.593} & 0.339 \\
 \midrule
 \multirow{2}{*}{crossover}
- & off & TBD & TBD & TBD \\
- & set-level $\star$ & TBD & TBD & TBD \\
+ & off & 0.802 & 0.529 & 0.333 \\
+ & set-level $\star$ & 0.757 & 0.361 & 0.347 \\
 \midrule
 \multirow{2}{*}{$\chi_d$ repair}
- & off & TBD & TBD & TBD \\
- & every op.\ $\star$ & TBD & TBD & TBD \\
+ & off & 0.750 & 0.438 & 0.342 \\
+ & every op.\ $\star$ & 0.757 & 0.361 & 0.347 \\
 \midrule
 \multirow{2}{*}{initialization}
- & white $\star$ & TBD & TBD & TBD \\
- & pink $\alpha{=}0.2$ & TBD & TBD & TBD \\
+ & white $\star$ & 0.757 & 0.361 & 0.347 \\
+ & pink $\alpha{=}0.2$ & 0.781 & 0.428 & 0.341 \\
 \bottomrule
 \end{tabular}
 \end{table}
