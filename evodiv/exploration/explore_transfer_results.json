@@ -1,0 +1,30 @@
+[
+  {
+    "prompt": "a photo of a bench",
+    "pixart_iid_dino": 0.5100407600402832,
+    "pixart_bred_dino": 0.5373450517654419,
+    "pixart_iid_clip": 0.3275,
+    "pixart_bred_clip": 0.33125000000000004
+  },
+  {
+    "prompt": "a photo of a cow",
+    "pixart_iid_dino": 0.363071084022522,
+    "pixart_bred_dino": 0.5095667243003845,
+    "pixart_iid_clip": 0.33187500000000003,
+    "pixart_bred_clip": 0.33125000000000004
+  },
+  {
+    "prompt": "a photo of a bicycle",
+    "pixart_iid_dino": 0.4682323634624481,
+    "pixart_bred_dino": 0.6933025121688843,
+    "pixart_iid_clip": 0.31625000000000003,
+    "pixart_bred_clip": 0.30000000000000004
+  },
+  {
+    "prompt": "a photo of a clock",
+    "pixart_iid_dino": 0.35573145747184753,
+    "pixart_bred_dino": 0.40023887157440186,
+    "pixart_iid_clip": 0.30500000000000005,
+    "pixart_bred_clip": 0.308125
+  }
+]
