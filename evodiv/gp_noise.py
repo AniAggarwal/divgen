@@ -262,7 +262,10 @@ class GPPopulation:
 
 
 def evolve_gp(spec, evaluator, prompt, pop_size, n_generations, device, generator,
-              max_depth: int = 4, log_fn: Optional[Callable[[str], None]] = None) -> EvoResult:
+              max_depth: int = 4, log_fn: Optional[Callable[[str], None]] = None,
+              quality_floor: Optional[float] = None) -> EvoResult:
+    """quality_floor: offspring whose quality falls below this are discarded
+    before survival (quality-constrained program search)."""
     log = log_fn or (lambda s: None)
     genomes = [GPGenome([random_tree(generator, max_depth) for _ in range(spec.set_size)])
                for _ in range(pop_size)]
@@ -305,6 +308,10 @@ def evolve_gp(spec, evaluator, prompt, pop_size, n_generations, device, generato
             children.append(GPGenome(trees))
         off = GPPopulation(children, spec, device)
         evaluator.evaluate(off, prompt, log_all=(gen == n_generations))
+        if quality_floor is not None:
+            keep = [i for i, r in enumerate(off.raw) if r["_quality"] >= quality_floor]
+            if keep:
+                off = off.select(torch.tensor(keep, device=device))
         pop = survival(GPPopulation.concat(pop, off), pop_size)
         record(gen)
 
