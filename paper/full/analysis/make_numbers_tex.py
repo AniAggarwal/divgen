@@ -119,12 +119,89 @@ def main():
         macro("nbRandDpp", r3(e2["best"]["diversity_dpp"]))
         if "total_renders_used" in e2:
             macro("nbRandTotalRendersM", f"{e2['total_renders_used']/1e6:.1f}")
-    if "e3_cmadct" in pp:
+    if "e3_cmadct" in pp and "best" in pp["e3_cmadct"]:
         e3 = pp["e3_cmadct"]
         for m in M3:
             macro(f"nbCmadct{SHORT[m]}", r3(e3["best"][m]))
         macro("nbCmadctVendi", r2(e3["best"]["diversity_vendi"]))
         macro("nbCmadctDpp", r3(e3["best"]["diversity_dpp"]))
+    if "cov_lowband_frac" in pp.get("e3_cmadct", {}):
+        macro("nbCmaLowBandFrac", f"{100 * pp['e3_cmadct']['cov_lowband_frac']:.0f}")
+
+    # E4 flux: breeding + memory table
+    if "e4_flux" in pp:
+        e4 = pp["e4_flux"]
+        if "best" in e4:
+            macro("nbFluxNumPrompts", e4["n"])
+            macro("nbFluxBredDino", r3(e4["best"]["diversity_dino"]))
+            macro("nbFluxBredClip", r3(e4["best"]["CLIP"]))
+            macro("nbFluxInitDino", r3(e4["init"]["diversity_dino"]))
+            macro("nbFluxInitClip", r3(e4["init"]["CLIP"]))
+        mt = e4.get("memory_table", {})
+        def mem(key, name):
+            if key in mt:
+                v = mt[key]
+                macro(name, "OOM" if v.get("oom") else f"{v['peak_mem_alloc_gb']:.1f}")
+        mem("forward_B4", "nbFwdFluxPeakFour")
+        mem("forward_B16", "nbFwdFluxPeakSixteen")
+        mem("gradient_B4", "nbGradFluxPeakFour")
+        mem("gradient_B16", "nbGradFluxPeakSixteen")
+
+    # E5 judges (methods x judges)
+    if "e5_judges" in pp:
+        for method, g in [("bred", "Bred"), ("grad", "Grad"),
+                          ("rand", "Rand"), ("cmadct", "Cmadct")]:
+            r = pp["e5_judges"].get(method)
+            if not r:
+                continue
+            for jk, jg in [("imagereward", "Imagereward"),
+                           ("pickscore", "Pickscore"), ("hpsv21", "Hpsv")]:
+                if jk in r:
+                    macro(f"nbJudge{g}{jg}", r3(r[jk]))
+
+    # E6 DPP under HPS floor
+    if "e6_dpp_hps" in pp and "best" in pp["e6_dpp_hps"]:
+        e6 = pp["e6_dpp_hps"]
+        if "diversity_dpp_raw" in e6["best"]:
+            macro("nbDppHpsBredDpp", r2(e6["best"]["diversity_dpp_raw"]))
+            if "diversity_dpp_raw" in e6.get("init", {}):
+                macro("nbDppHpsInitDpp", r2(e6["init"]["diversity_dpp_raw"]))
+        if "HPS" in e6["best"]:
+            macro("nbDppHpsBredHps", r3(e6["best"]["HPS"]))
+
+    # E7 DPG subset
+    if "e7_dpg" in pp and "best" in pp["e7_dpg"]:
+        e7 = pp["e7_dpg"]
+        macro("nbDpgBredDino", r3(e7["best"]["diversity_dino"]))
+        macro("nbDpgBredClip", r3(e7["best"]["CLIP"]))
+        if "init" in e7:
+            macro("nbDpgInitDino", r3(e7["init"]["diversity_dino"]))
+            macro("nbDpgInitClip", r3(e7["init"]["CLIP"]))
+
+    # E8 vendi long budget
+    if "plateau_gen" in pp.get("e8_vendi", {}):
+        e8 = pp["e8_vendi"]
+        macro("nbVendiPlateauGen", e8["plateau_gen"])
+        macro("nbVendiLongBest", r2(e8["final_best_vendi_curve"]))
+        macro("nbVendiLongInit", r2(e8["init_vendi_curve"]))
+
+    # E9 lpips probe
+    if "e9_lpips" in pp and "best" in pp["e9_lpips"]:
+        e9 = pp["e9_lpips"]
+        macro("nbLpipsProbeLpips", r3(e9["best"]["diversity_lpips"]))
+        macro("nbLpipsProbeClip", r3(e9["best"]["CLIP"]))
+
+    # E10b transfer bands
+    if "e10_transfer_bands" in pp and "full_gain_pct" in pp["e10_transfer_bands"]:
+        tb = pp["e10_transfer_bands"]
+        macro("nbTransferFullGainPct", f"{tb['full_gain_pct']:.0f}")
+        macro("nbTransferLowGainPct", f"{tb['low_gain_pct']:.0f}")
+        macro("nbTransferHighGainPct", f"{tb['high_gain_pct']:.0f}")
+
+    # E11 seed variance
+    if "e11_seeds" in pp and "std_dino" in pp["e11_seeds"]:
+        macro("nbSeedStdDino", r3(pp["e11_seeds"]["std_dino"]))
+        macro("nbSeedStdClip", r3(pp["e11_seeds"]["std_clip"]))
 
     # ---- stats macros ------------------------------------------------------ #
     def pfmt(p):

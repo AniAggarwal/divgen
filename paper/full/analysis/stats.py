@@ -38,6 +38,11 @@ COMPARISONS = [
     ("e2_random", "bred_vs_rand_lpips", "geneval_merged", "paperprep/e2_random", "diversity_lpips"),
     ("e2_random", "bred_vs_rand_clip", "geneval_merged", "paperprep/e2_random", "CLIP"),
     ("e2_random", "bred_vs_rand_vendi", "geneval_merged", "paperprep/e2_random", "diversity_vendi"),
+    # E1 (rescored): both methods' saved jpgs scored by identical metric code
+    ("e1_rescored", "bred_vs_grad_rescored_dino", "paperprep/e5_judges:bred", "paperprep/e5_judges:grad", "diversity_dino"),
+    ("e1_rescored", "bred_vs_grad_rescored_dreamsim", "paperprep/e5_judges:bred", "paperprep/e5_judges:grad", "diversity_dreamsim"),
+    ("e1_rescored", "bred_vs_grad_rescored_lpips", "paperprep/e5_judges:bred", "paperprep/e5_judges:grad", "diversity_lpips"),
+    ("e1_rescored", "bred_vs_grad_rescored_clip", "paperprep/e5_judges:bred", "paperprep/e5_judges:grad", "CLIP"),
     # E5: judge panel, breeding vs gradient on independent judges
     ("e5_judges", "bred_vs_grad_imagereward", "paperprep/e5_judges:bred", "paperprep/e5_judges:grad", "imagereward"),
     ("e5_judges", "bred_vs_grad_pickscore", "paperprep/e5_judges:bred", "paperprep/e5_judges:grad", "pickscore"),

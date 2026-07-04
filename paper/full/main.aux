@@ -1,0 +1,69 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{harrington2026never}
+\citation{aggarwal2026ecad}
+\citation{deb2002nsga2}
+\citation{harrington2026never}
+\citation{parmar2025scaling}
+\citation{deb2002nsga2}
+\citation{beyer2002es}
+\citation{hansen2001cma}
+\citation{mouret2015illuminating}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related work}{1}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Noise-space optimization.}{1}{section*.2}\protected@file@percent }
+\citation{xu2023imagereward}
+\citation{kirstain2023pickapic}
+\citation{wu2023hps}
+\citation{beyer2002es}
+\citation{hansen2001cma}
+\citation{parmar2025scaling}
+\@writefile{toc}{\contentsline {paragraph}{Population-based search.}{2}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Learned preference models.}{2}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Breeding noise sets}{2}{section.3}\protected@file@percent }
+\newlabel{sec:method}{{3}{2}{Breeding noise sets}{section.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Individuals.}{2}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Objectives.}{2}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Operators, each borrowed from a finding of theirs.}{2}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Self-tuned exploration.}{2}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{A 64$\times $ smaller parameterization.}{2}{section*.9}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces GenEval, SDXL-Turbo, white-noise initialization, set size 4. Top: rows quoted from Harrington et al.\ Tab.~1. Bottom: methods run in this work under the official repository's metric code over all 553{} prompts. }}{2}{table.caption.12}\protected@file@percent }
+\newlabel{tab:main}{{1}{2}{GenEval, SDXL-Turbo, white-noise initialization, set size 4. Top: rows quoted from Harrington et al.\ Tab.~1. Bottom: methods run in this work under the official repository's metric code over all \nbNumPrompts {} prompts. \ifdefined \nbRandDino Random search uses the identical per-prompt render budget as breeding (\nbRandTotalRendersM M renders total).\fi }{table.caption.12}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Design ablations (six GenEval prompts, 45 generations, population 32, matched seeds; defaults marked $\star $; gen-0 i.i.d.\ reference: DINO 0.639, CLIP 0.338). Variants move \emph  {along} the quality--diversity front; removing the spectral bias ($\beta {=}0$) or fixing a $1\%$ rate is dominated outright.}}{2}{table.caption.14}\protected@file@percent }
+\newlabel{tab:mut}{{2}{2}{Design ablations (six GenEval prompts, 45 generations, population 32, matched seeds; defaults marked $\star $; gen-0 i.i.d.\ reference: DINO \nbAblInitDino , CLIP \nbAblInitClip ). Variants move \emph {along} the quality--diversity front; removing the spectral bias ($\beta {=}0$) or fixing a $1\%$ rate is dominated outright}{table.caption.14}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experiments}{2}{section.4}\protected@file@percent }
+\newlabel{sec:results}{{4}{2}{Experiments}{section.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Setup.}{2}{section*.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Headline.}{2}{section*.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Design ablations.}{2}{section*.15}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Convergence averaged over GenEval prompts (SDXL-Turbo, population 40). Left: the bred diversity objective (best and population mean). Middle: CLIP quality \emph  {rises} during search --- Pareto selection concedes nothing for the diversity gain. Right: the self-adaptive mutation step $\sigma $ and rate $\rho $, raised then annealed by selection alone.}}{3}{figure.caption.10}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:conv}{{1}{3}{Convergence averaged over GenEval prompts (SDXL-Turbo, population 40). Left: the bred diversity objective (best and population mean). Middle: CLIP quality \emph {rises} during search --- Pareto selection concedes nothing for the diversity gain. Right: the self-adaptive mutation step $\sigma $ and rate $\rho $, raised then annealed by selection alone}{figure.caption.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Peak CUDA memory (GB), FLUX.1-schnell at 512$\times $512, one optimization step, CLIP+DINO objectives. Forward = render + score (breeding); gradient = one optimizer iteration, backprop through the sampler.}}{3}{table.caption.17}\protected@file@percent }
+\newlabel{tab:mem}{{3}{3}{Peak CUDA memory (GB), FLUX.1-schnell at 512$\times $512, one optimization step, CLIP+DINO objectives. Forward = render + score (breeding); gradient = one optimizer iteration, backprop through the sampler}{table.caption.17}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Scaling to FLUX.1-schnell}{3}{section.5}\protected@file@percent }
+\newlabel{sec:flux}{{5}{3}{Scaling to FLUX.1-schnell}{section.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{The memory wall, measured.}{3}{section*.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Analysis}{3}{section.6}\protected@file@percent }
+\newlabel{sec:analysis}{{6}{3}{Analysis}{section.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{Bred noise transfers across models.}{3}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Two extensions the population view invites.}{3}{section*.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}What each method offers}{3}{section.7}\protected@file@percent }
+\newlabel{sec:trade}{{7}{3}{What each method offers}{section.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Limitations}{3}{section.8}\protected@file@percent }
+\bibcite{harrington2026never}{1}
+\bibcite{aggarwal2026ecad}{2}
+\bibcite{deb2002nsga2}{3}
+\bibcite{beyer2002es}{4}
+\bibcite{hansen2001cma}{5}
+\bibcite{mouret2015illuminating}{6}
+\bibcite{parmar2025scaling}{7}
+\bibcite{xu2023imagereward}{8}
+\bibcite{kirstain2023pickapic}{9}
+\bibcite{wu2023hps}{10}
+\bibcite{flux2024}{11}
+\bibcite{hu2024dpg}{12}
+\@writefile{toc}{\contentsline {section}{\numberline {9}Closing}{4}{section.9}\protected@file@percent }
+\gdef \@abspage@last{4}

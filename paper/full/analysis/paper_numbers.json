@@ -605,7 +605,32 @@
   },
   "n": 553
  },
- "paperprep": {},
+ "paperprep": {
+  "e4_flux": {
+   "memory_table": {
+    "forward_B16": {
+     "oom": false,
+     "peak_mem_alloc_gb": 44.36,
+     "render_plus_score_s": 0.66
+    },
+    "forward_B4": {
+     "oom": false,
+     "peak_mem_alloc_gb": 37.89,
+     "render_plus_score_s": 0.21
+    },
+    "gradient_B16": {
+     "oom": false,
+     "peak_mem_alloc_gb": 113.84,
+     "s_per_iter": 4.02
+    },
+    "gradient_B4": {
+     "oom": false,
+     "peak_mem_alloc_gb": 57.92,
+     "s_per_iter": 2.39
+    }
+   }
+  }
+ },
  "reference": {
   "_provenance": "Harrington et al. CVPR26 Tab.1/Sec 4.2; Parmar arXiv:2508.15773",
   "harrington_grad": {

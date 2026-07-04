@@ -71,6 +71,8 @@ def check_no_bare_decimals():
                 before = code[:m.start()]
                 if re.search(r"(Sec|Fig|Tab|Section|Figure|Table|Eq)[.~\s]*$", before):
                     continue   # structural cross-reference, not a result
+                if re.search(r"arXiv:$", before):
+                    continue   # bibliography identifier
                 if m.group(0) not in WHITELIST:
                     bad.append(f"{os.path.relpath(tex, PAPER_DIR)}:{lineno}: "
                                f"bare decimal {m.group(0)!r}: {code.strip()[:80]}")

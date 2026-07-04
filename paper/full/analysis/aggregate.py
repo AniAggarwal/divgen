@@ -210,6 +210,51 @@ def main():
                 with open(pp) as fp:
                     per_prompt[f"paperprep/{exp}"] = json.load(fp)
 
+    # E4's memory table exists as soon as the probes ran (before breeding ends)
+    mt = os.path.join(PREP, "e4_flux", "memory_table.json")
+    if os.path.exists(mt) and "memory_table" not in out["paperprep"].get("e4_flux", {}):
+        out["paperprep"].setdefault("e4_flux", {})["memory_table"] = json.load(open(mt))
+
+    # E3 covariance dumps -> low-band variance fraction (E10a)
+    cov_files = glob.glob(os.path.join(PREP, "e3_cmadct", "*", "cma_cov.npz"))
+    if len(cov_files) >= 10:
+        import numpy as np
+        K = 8
+        kk, ll = np.meshgrid(np.arange(K), np.arange(K), indexing="ij")
+        radial = (kk + ll).reshape(-1)
+        low = radial <= 4          # lowest third of the 0..14 radial bands
+        fracs = []
+        for f in cov_files:
+            cv = np.load(f)["coord_var"].reshape(-1, K * K).mean(0)
+            fracs.append(float(cv[low].sum() / cv.sum()))
+        out.setdefault("paperprep", {}).setdefault("e3_cmadct", {})[
+            "cov_lowband_frac"] = float(np.mean(fracs))
+        out["paperprep"]["e3_cmadct"]["cov_n"] = len(fracs)
+
+    # E8 vendi plateau: generation where the mean best-vendi curve reaches
+    # 99% of its final value
+    e8 = glob.glob(os.path.join(PREP, "e8_vendi", "evodiv", "sdxl-turbo",
+                                "*", "[0-9]*", "history.json"))
+    if len(e8) >= 10:
+        import numpy as np
+        G = 0
+        curves = []
+        for hp in e8:
+            h = json.load(open(hp))["history"]
+            c = [e.get("best_diversity") for e in h]
+            curves.append(c)
+            G = max(G, len(c))
+        m = np.full((len(curves), G), np.nan)
+        for i, c in enumerate(curves):
+            m[i, :len(c)] = c
+            m[i, len(c):] = c[-1]
+        mean = np.nanmean(m, 0)
+        target = mean[0] + 0.99 * (mean[-1] - mean[0])
+        plateau = int(np.argmax(mean >= target))
+        out["paperprep"].setdefault("e8_vendi", {}).update(
+            {"plateau_gen": plateau, "final_best_vendi_curve": float(mean[-1]),
+             "init_vendi_curve": float(mean[0])})
+
     # ---- write ------------------------------------------------------------ #
     with open(os.path.join(HERE, "paper_numbers.json"), "w") as fp:
         json.dump(out, fp, indent=1, sort_keys=True)
