@@ -11,25 +11,27 @@
 \usepackage{caption}
 \captionsetup{font=small,labelfont=bf}
 
-% ---- result macros (filled from the full 552-prompt GenEval run) ----
-\newcommand{\dinoIID}{0.588}      % paper i.i.d.
-\newcommand{\dinoParmar}{0.705}
-\newcommand{\dinoGrad}{0.784}
-\newcommand{\dsGrad}{0.411}
-\newcommand{\lpipsGrad}{0.767}
-\newcommand{\clipGrad}{0.349}
-% ours (placeholders -> final numbers)
-\newcommand{\dinoOursInit}{0.658}
-\newcommand{\dinoOurs}{0.790}
-\newcommand{\dsOursInit}{0.297}
-\newcommand{\dsOurs}{0.437}
-\newcommand{\lpipsOursInit}{0.670}
-\newcommand{\lpipsOurs}{0.745}
-\newcommand{\vendiOursInit}{2.17}
-\newcommand{\vendiOurs}{2.85}
-\newcommand{\clipOursInit}{0.375}
-\newcommand{\clipOurs}{0.393}
-\newcommand{\numPrompts}{553}
+% ---- result macros: ALL numeric values are generated from the runs by ----
+% paper/full/analysis/{aggregate.py,stats.py,make_numbers_tex.py} -> numbers.tex.
+% Nothing numeric is typed by hand (verified by analysis/verify_tex_numbers.py).
+\input{numbers.tex}
+\newcommand{\dinoIID}{\nbPaperIidDino}
+\newcommand{\dinoParmar}{\nbParmarDino}
+\newcommand{\dinoGrad}{\nbPaperGradDino}
+\newcommand{\dsGrad}{\nbPaperGradDreamsim}
+\newcommand{\lpipsGrad}{\nbPaperGradLpips}
+\newcommand{\clipGrad}{\nbPaperGradClip}
+\newcommand{\dinoOursInit}{\nbInitDino}
+\newcommand{\dinoOurs}{\nbBredDino}
+\newcommand{\dsOursInit}{\nbInitDreamsim}
+\newcommand{\dsOurs}{\nbBredDreamsim}
+\newcommand{\lpipsOursInit}{\nbInitLpips}
+\newcommand{\lpipsOurs}{\nbBredLpips}
+\newcommand{\vendiOursInit}{\nbInitVendi}
+\newcommand{\vendiOurs}{\nbBredVendi}
+\newcommand{\clipOursInit}{\nbInitClip}
+\newcommand{\clipOurs}{\nbBredClip}
+\newcommand{\numPrompts}{\nbNumPrompts}
 
 \title{\LARGE \bf Breeding Diverse Noise: A Population-Based Companion to\\
 ``It's Never Too Late'' Collapse Recovery}
@@ -157,8 +159,8 @@ metrics: higher is better.}
 \toprule
 Method & DINO & DreamSim & LPIPS & CLIP \\
 \midrule
-i.i.d. & \dinoIID & 0.249 & 0.642 & 0.335 \\
-Parmar et al.~\cite{parmar2025scaling} & \dinoParmar & 0.331 & 0.682 & 0.333 \\
+i.i.d. & \dinoIID & \nbPaperIidDreamsim & \nbPaperIidLpips & \nbPaperIidClip \\
+Parmar et al.~\cite{parmar2025scaling} & \dinoParmar & \nbParmarDreamsim & \nbParmarLpips & \nbParmarClip \\
 Harrington et al.\ (gradient) & \dinoGrad & \dsGrad & \lpipsGrad & \clipGrad \\
 \midrule
 Bred, gen.~0 (i.i.d.) & \dinoOursInit & \dsOursInit & \lpipsOursInit & \clipOursInit \\
@@ -193,8 +195,8 @@ gradient is one excellent way, not the only one.
 \centering
 \small
 \caption{Design ablations (six GenEval prompts, 45 generations, population 32,
-matched seeds; defaults marked $\star$; gen-0 i.i.d.\ reference: DINO 0.639,
-CLIP 0.338). Variants move \emph{along} the quality--diversity front: the
+matched seeds; defaults marked $\star$; gen-0 i.i.d.\ reference: DINO \nbAblInitDino,
+CLIP \nbAblInitClip). Variants move \emph{along} the quality--diversity front: the
 defaults hold the highest quality, while removing the spectral bias
 ($\beta{=}0$) or fixing a $1\%$ rate is dominated outright.}
 \label{tab:mut}
@@ -205,26 +207,26 @@ defaults hold the highest quality, while removing the spectral bias
 Group & Variant & DINO & DreamSim & CLIP \\
 \midrule
 \multirow{3}{*}{mutation rate}
- & fixed $1\%$ & 0.705 & 0.324 & 0.346 \\
- & fixed $15\%$ & 0.790 & 0.464 & 0.336 \\
- & self-tuned $\star$ & 0.757 & 0.361 & \textbf{0.347} \\
+ & fixed $1\%$ & \nbAblMutOneDino & \nbAblMutOneDreamsim & \nbAblMutOneClip \\
+ & fixed $15\%$ & \nbAblMutFifteenDino & \nbAblMutFifteenDreamsim & \nbAblMutFifteenClip \\
+ & self-tuned $\star$ & \nbAblDefaultDino & \nbAblDefaultDreamsim & \textbf{\nbAblDefaultClip} \\
 \midrule
 \multirow{3}{*}{spectral bias}
- & $\beta{=}0$ (white) & 0.714 & 0.316 & 0.348 \\
- & $\beta{=}1$ $\star$ & 0.757 & 0.361 & 0.347 \\
- & $\beta{=}2$ & \textbf{0.830} & \textbf{0.593} & 0.339 \\
+ & $\beta{=}0$ (white) & \nbAblBetaZeroDino & \nbAblBetaZeroDreamsim & \nbAblBetaZeroClip \\
+ & $\beta{=}1$ $\star$ & \nbAblDefaultDino & \nbAblDefaultDreamsim & \nbAblDefaultClip \\
+ & $\beta{=}2$ & \textbf{\nbAblBetaTwoDino} & \textbf{\nbAblBetaTwoDreamsim} & \nbAblBetaTwoClip \\
 \midrule
 \multirow{2}{*}{crossover}
- & off & 0.802 & 0.529 & 0.333 \\
- & set-level $\star$ & 0.757 & 0.361 & 0.347 \\
+ & off & \nbAblNoXoverDino & \nbAblNoXoverDreamsim & \nbAblNoXoverClip \\
+ & set-level $\star$ & \nbAblDefaultDino & \nbAblDefaultDreamsim & \nbAblDefaultClip \\
 \midrule
 \multirow{2}{*}{$\chi_d$ repair}
- & off & 0.750 & 0.438 & 0.342 \\
- & every op.\ $\star$ & 0.757 & 0.361 & 0.347 \\
+ & off & \nbAblNoRepairDino & \nbAblNoRepairDreamsim & \nbAblNoRepairClip \\
+ & every op.\ $\star$ & \nbAblDefaultDino & \nbAblDefaultDreamsim & \nbAblDefaultClip \\
 \midrule
 \multirow{2}{*}{initialization}
- & white $\star$ & 0.757 & 0.361 & 0.347 \\
- & pink $\alpha{=}0.2$ & 0.781 & 0.428 & 0.341 \\
+ & white $\star$ & \nbAblDefaultDino & \nbAblDefaultDreamsim & \nbAblDefaultClip \\
+ & pink $\alpha{=}0.2$ & \nbAblPinkDino & \nbAblPinkDreamsim & \nbAblPinkClip \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -249,12 +251,12 @@ landscapes, five-word prompts, long GPT-written prompts), with the best noise
 sets migrating between islands every few generations. Because a noise set is
 prompt-agnostic, a migrant that keeps winning after crossing prompt types is
 one whose diversity \emph{generalizes}: in our runs, migrated elites retain
-$0.65$--$0.69$ DINO diversity on prompt families they never saw during
+$\nbIslandsCrossMin$--$\nbIslandsCrossMax$ DINO diversity on prompt families they never saw during
 selection. Per-prompt gradient descent has no natural analogue of this test.
 (ii)~\emph{Searching program space.} Instead of breeding the noise tensor, we
 can breed a small symbolic \emph{program} (compositions of white noise, pink
 filtering, and low-frequency gratings) that generates it. Program search
-reaches the highest raw diversity we observe (DINO $0.886$) at a real cost in
+reaches the highest raw diversity we observe (DINO $\nbGpDino$) at a real cost in
 prompt fidelity --- it maps the far end of the quality--diversity front --- and
 its early winners rediscover low-frequency structure on their own, an
 independent confirmation of the paper's spectral analysis.
@@ -263,7 +265,7 @@ independent confirmation of the paper's spectral analysis.
 
 We want to be precise about the trade, because the comparison flatters neither
 method alone. The gradient optimizer is far more sample-efficient where it
-applies: at $0.345$\,s per iteration on an A100 (their Sec.~4.2), it reaches its
+applies: at $\nbPaperGradSecPerIterAHundred$\,s per iteration on an A100 (their Sec.~4.2), it reaches its
 result in seconds per prompt, while breeding spends thousands of forward
 renders to arrive at the same neighborhood. Population search earns that cost
 back in three situations. \emph{Memory:} it never backpropagates through the

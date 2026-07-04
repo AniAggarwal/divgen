@@ -1,0 +1,51 @@
+# EvoDiv on FLUX.1-schnell (E4): breeding noise sets for a 12B flow model.
+# Search at 1 inference step (packed latents, forward-only); init/best rendered
+# at 4 steps for reporting, mirroring the repo's flux gradient protocol.
+paths:
+  cache_dir: ./cache
+  save_dir: ./outputs
+
+model:
+  name: flux-schnell
+  dtype: bfloat16
+
+optimization:
+  n_inference_steps: 1
+  noise_type: white
+
+rewards:
+  clip:
+    enable: true
+    weighting: 1.0
+
+diversity:
+  dino:
+    enable: true
+    weight: 1.0
+    model_name: facebook/dinov2-base
+  dreamsim:
+    enable: false
+  lpips:
+    enable: false
+
+task:
+  type: geneval
+  prompt_start_index: 0
+  prompt_end_index: 60
+
+multi_step:
+  enable: true
+
+evolution:
+  pop_size: 24
+  n_generations: 30
+  set_size: 4
+  seed: 0
+  render_chunk: 24
+  self_adaptive: true
+  p_crossover: 0.9
+  use_surrogate: false
+  compile_model: false
+  skip_existing: true
+  early_stop_patience: 8
+  early_stop_min_delta: 0.002

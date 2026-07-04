@@ -65,6 +65,11 @@ class FitnessEvaluator:
         self.model_dtype = model_dtype
         self.render_chunk = render_chunk
         self.multi_apply_fn = multi_apply_fn
+        # Optional latent transform applied at the render boundary. The genome
+        # stays in spatial (C, H, W) form -- spectral mutation and chi_d repair
+        # need the 2D structure -- and models that consume packed sequences
+        # (flux-schnell: 2x2 spatial->channel, (16,64,64) -> (1024, 64)) pack here.
+        self.pack_fn = None
         self.preprocess = clip_img_transform(224)
         self.n_renders = 0   # running count of images rendered (compute accounting)
 
@@ -109,6 +114,8 @@ class FitnessEvaluator:
             out: List[torch.Tensor] = []
             for start in range(0, n, self.render_chunk):
                 chunk = latents[start:start + self.render_chunk].to(self.model_dtype)
+                if self.pack_fn is not None:
+                    chunk = self.pack_fn(chunk)
                 gen = torch.Generator("cuda").manual_seed(self.seed)
                 img = self.model.apply(
                     latents=chunk,

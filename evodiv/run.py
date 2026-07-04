@@ -37,13 +37,28 @@ from evodiv.islands import run_islands
 from evodiv.io_utils import save_image_set, tensor_set_to_pil
 
 
+def flux_pack(latents: torch.Tensor) -> torch.Tensor:
+    """Flux 2x2 spatial->channel packing: (N, C, H, W) -> (N, H/2*W/2, C*4).
+
+    Matches diffusers FluxPipeline._pack_latents (and training/noise_utils).
+    The genome stays spatial so spectral mutation / chi_d repair / DCT
+    parameterizations keep their 2D meaning; packing happens only at the
+    render boundary (FitnessEvaluator.pack_fn).
+    """
+    n, c, h, w = latents.shape
+    x = latents.view(n, c, h // 2, 2, w // 2, 2)
+    x = x.permute(0, 2, 4, 1, 3, 5)
+    return x.reshape(n, (h // 2) * (w // 2), c * 4)
+
+
 def _latent_spec(cfg, pipe, set_size: int) -> GenomeSpec:
     """Derive the per-image latent (C,H,W) for the model and wrap in a GenomeSpec."""
     name = cfg.model.name
-    if name in ("flux-schnell", "flux-klein"):
-        raise NotImplementedError(
-            "EvoDiv currently targets sdxl-turbo / pixart; flux latent packing is a scale-up TODO."
-        )
+    if name == "flux-schnell":
+        # 512x512: VAE latents (16, 64, 64), packed 2x2 to (1024, 64) at render.
+        c, h, w = 16, 64, 64
+    elif name == "flux-klein":
+        raise NotImplementedError("flux-klein packs internally; not wired for breeding yet.")
     elif name != "pixart":
         c = pipe.unet.in_channels
         h = pipe.unet.config.sample_size
@@ -119,7 +134,12 @@ def main(cfg: EvoConfig):
         seed=cfg.evolution.seed, device=device, model_dtype=dtype,
         render_chunk=cfg.evolution.render_chunk, multi_apply_fn=multi_apply_fn,
     )
+    if cfg.model.name == "flux-schnell":
+        evaluator.pack_fn = flux_pack
+        log("Flux latent packing enabled: spatial (16,64,64) genome -> packed (1024,64) at render.")
     if cfg.evolution.use_surrogate:
+        if cfg.model.name == "flux-schnell":
+            raise ValueError("TAESD surrogate is SDXL-only; disable --evolution.use_surrogate for flux.")
         evaluator.enable_surrogate(cfg.paths.cache_dir)
         log("Surrogate decoder (TAESD) enabled for search generations "
             f"(exact re-anchor every {cfg.evolution.exact_every} gens).")
@@ -192,12 +212,43 @@ def main(cfg: EvoConfig):
         # render + save init and best sets
         p_out = os.path.join(outdir, f"{pi:04d}_{prompt[:60].replace('/', '_')}")
         os.makedirs(p_out, exist_ok=True)
+        best_metrics_multistep = None
         with torch.no_grad():
-            best_imgs = evaluator.render(result.population.latents[best_i], prompt)
+            best_lat = result.population.latents[best_i]
+            if evaluator.multi_apply_fn is not None:
+                # flux protocol: search at 1 step, report renders at 4 steps
+                packed = evaluator.pack_fn(best_lat.to(dtype)) if evaluator.pack_fn else best_lat.to(dtype)
+                best_imgs = evaluator.multi_apply_fn(packed, prompt).float()
+                q = evaluator._quality_of_set(best_imgs, prompt, evaluator.reward_losses)
+                d = evaluator._diversity_of_set(
+                    best_imgs, evaluator.diversity_objectives + evaluator.eval_diversity_objectives)
+                best_metrics_multistep = {**q, **d}
+                log(f"[prompt {pi}] best @4-step render: "
+                    f"{ {k: round(v, 4) for k, v in best_metrics_multistep.items()} }")
+                # matched i.i.d. reference at 4 steps (the first gen-0 genome's set)
+                iid_lat = init_population(
+                    spec, 1, device, noise_type=cfg.optimization.noise_type,
+                    noise_exponent=cfg.optimization.noise_exponent,
+                    seed=cfg.evolution.seed + pi * 100003,
+                ).latents[0]
+                iid_packed = evaluator.pack_fn(iid_lat.to(dtype)) if evaluator.pack_fn else iid_lat.to(dtype)
+                iid_imgs = evaluator.multi_apply_fn(iid_packed, prompt).float()
+                qi = evaluator._quality_of_set(iid_imgs, prompt, evaluator.reward_losses)
+                di = evaluator._diversity_of_set(
+                    iid_imgs, evaluator.diversity_objectives + evaluator.eval_diversity_objectives)
+                init_metrics_multistep = {**qi, **di}
+                del iid_imgs
+                log(f"[prompt {pi}] i.i.d. @4-step render: "
+                    f"{ {k: round(v, 4) for k, v in init_metrics_multistep.items()} }")
+            else:
+                best_imgs = evaluator.render(best_lat, prompt)
         save_image_set(tensor_set_to_pil(best_imgs), os.path.join(p_out, "best_image.jpg"))
         with open(os.path.join(p_out, "history.json"), "w") as fp:
             json.dump({"prompt": prompt, "history": hist,
                        "best_metrics": {k: v for k, v in best_raw.items()},
+                       "best_metrics_multistep": best_metrics_multistep,
+                       "init_metrics_multistep": (init_metrics_multistep
+                                                  if evaluator.multi_apply_fn is not None else None),
                        "quality_floor": quality_floor}, fp, indent=2)
 
         # accumulate summary over the headline metrics present at gen0

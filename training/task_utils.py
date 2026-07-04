@@ -90,7 +90,23 @@ def process_prompt_batch(
     
     for i, metadata in enumerate(prompts_metadata):
         index = start_idx + i
-        
+
+        # Resume: skip prompts already completed (opt-in via env, for long runs)
+        if os.environ.get("DIVGEN_SKIP_EXISTING") == "1":
+            done_path = f"{outdir}/{index:0>5}/results.json"
+            if os.path.exists(done_path):
+                with open(done_path) as fp:
+                    prev = json.load(fp)
+                logging.info(f"Prompt {index}: results.json exists, skipping (resume mode)")
+                if prev.get("initial_rewards") and prev.get("best_rewards"):
+                    if not total_best_rewards:
+                        total_best_rewards = {k: 0.0 for k in prev["best_rewards"]}
+                        total_init_rewards = {k: 0.0 for k in prev["initial_rewards"]}
+                    for k in prev["best_rewards"]:
+                        total_best_rewards[k] += prev["best_rewards"][k]
+                        total_init_rewards[k] += prev["initial_rewards"].get(k, 0.0)
+                continue
+
         # Initialize latents and optimizer
         # Use seed + index for each prompt to ensure different but reproducible initialization
         init_latents = generate_latents(
@@ -134,6 +150,10 @@ def process_prompt_batch(
         
         # Run optimization
         # Note: all_diversity_objectives are already loaded in main.py for comprehensive logging
+        import time as _time
+        torch.cuda.synchronize()
+        torch.cuda.reset_peak_memory_stats()
+        _t0 = _time.perf_counter()
         (
             init_images,
             best_images,
@@ -149,6 +169,10 @@ def process_prompt_batch(
             hps_revert_mode=hps_revert_mode,
             hps_warmup_iters=cfg.rewards.hps.warmup_iters,
         )
+        torch.cuda.synchronize()
+        _elapsed = _time.perf_counter() - _t0
+        _peak_alloc_gb = torch.cuda.max_memory_allocated() / 1e9
+        _peak_reserved_gb = torch.cuda.max_memory_reserved() / 1e9
         
         # Store iteration history
         if iteration_history:
@@ -171,6 +195,10 @@ def process_prompt_batch(
             "seed": cfg.optimization.seed + index,
             "initial_rewards": init_rewards,
             "best_rewards": best_rewards,
+            "elapsed_s": _elapsed,
+            "s_per_iter": _elapsed / max(len(iteration_history) if iteration_history else cfg.optimization.n_iters, 1),
+            "peak_mem_alloc_gb": _peak_alloc_gb,
+            "peak_mem_reserved_gb": _peak_reserved_gb,
         }
         
         # Add subset info if available
