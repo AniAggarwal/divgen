@@ -607,6 +607,34 @@
  },
  "paperprep": {
   "e4_flux": {
+   "best": {
+    "CLIP": 0.31083333333333335,
+    "diversity_color": 0.38955679908394814,
+    "diversity_dino": 0.7909991989533106,
+    "diversity_dpp": 0.8943895677725474,
+    "diversity_dpp_patch": 0.9662461221218109,
+    "diversity_dpp_patch_raw": 2.679003103574117,
+    "diversity_dpp_raw": 2.4797744313875834,
+    "diversity_dreamsim": 0.6043818602959316,
+    "diversity_lpips": 0.8161685655514399,
+    "diversity_tiny_l2": 0.48119003027677537,
+    "diversity_vendi": 2.9938860793908435,
+    "diversity_vendi_sscd": 3.8904200474421184
+   },
+   "init": {
+    "CLIP": 0.31354166666666666,
+    "diversity_color": 0.19662924855947495,
+    "diversity_dino": 0.5821711366375287,
+    "diversity_dpp": 0.7672952979803085,
+    "diversity_dpp_patch": 0.8946094085772832,
+    "diversity_dpp_patch_raw": 2.4803839604059856,
+    "diversity_dpp_raw": 2.127394300699234,
+    "diversity_dreamsim": 0.31764865418275195,
+    "diversity_lpips": 0.7016385595003763,
+    "diversity_tiny_l2": 0.37210990861058235,
+    "diversity_vendi": 2.0642168879508973,
+    "diversity_vendi_sscd": 3.564402409394582
+   },
    "memory_table": {
     "forward_B16": {
      "oom": false,
@@ -628,6 +656,23 @@
      "peak_mem_alloc_gb": 57.92,
      "s_per_iter": 2.39
     }
+   },
+   "n": 60,
+   "search_best": {
+    "CLIP": 0.32466666666666666,
+    "_diversity": 0.7969842324654262,
+    "_quality": 0.32466666666666666,
+    "diversity_color": 0.3814657839636008,
+    "diversity_dino": 0.7969842324654262,
+    "diversity_dpp": 0.9033239950736364,
+    "diversity_dpp_patch": 0.9671699474255244,
+    "diversity_dpp_patch_raw": 2.6815644900004068,
+    "diversity_dpp_raw": 2.5045459349950154,
+    "diversity_dreamsim": 0.6174023280541102,
+    "diversity_lpips": 0.819021338224411,
+    "diversity_tiny_l2": 0.4748435581723849,
+    "diversity_vendi": 3.068696079651515,
+    "diversity_vendi_sscd": 3.9104255040486655
    }
   }
  },
