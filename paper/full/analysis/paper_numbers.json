@@ -606,6 +606,27 @@
   "n": 553
  },
  "paperprep": {
+  "e2_random": {
+   "best": {
+    "CLIP": 0.3594482421875,
+    "diversity_color": 0.10913858503045049,
+    "diversity_dino": 0.6831242557382211,
+    "diversity_dpp": 0.7907443684525788,
+    "diversity_dpp_patch": 0.9316951464861631,
+    "diversity_dpp_patch_raw": 2.583207462914288,
+    "diversity_dpp_raw": 2.1924089221283793,
+    "diversity_dreamsim": 0.31948502696468495,
+    "diversity_lpips": 0.6826832841616124,
+    "diversity_tiny_l2": 0.2987134323338978,
+    "diversity_vendi": 2.206820604391396,
+    "diversity_vendi_sscd": 3.446442765183747
+   },
+   "mean_elapsed_s": 276.03422802034765,
+   "mean_renders_used": 27263.34375,
+   "n": 256,
+   "total_elapsed_s": 70664.762373209,
+   "total_renders_used": 6979416
+  },
   "e4_flux": {
    "best": {
     "CLIP": 0.31083333333333335,
@@ -673,6 +694,24 @@
     "diversity_tiny_l2": 0.4748435581723849,
     "diversity_vendi": 3.068696079651515,
     "diversity_vendi_sscd": 3.9104255040486655
+   }
+  },
+  "e5_judges": {
+   "bred": {
+    "CLIP": 0.3960290461121158,
+    "diversity_color": 0.14128775893968226,
+    "diversity_dino": 0.7912198184411737,
+    "diversity_dpp": 0.8783672276284767,
+    "diversity_dpp_patch": 0.9665472679931475,
+    "diversity_dreamsim": 0.4412223849223277,
+    "diversity_lpips": 0.737626738832829,
+    "diversity_tiny_l2": 0.33935664499862284,
+    "diversity_vendi": 2.8589555594201115,
+    "diversity_vendi_sscd": 3.713117423152406,
+    "hpsv21": 0.26672448818765543,
+    "imagereward": 0.6707485475749827,
+    "n": 553,
+    "pickscore": 22.541179656982422
    }
   }
  },

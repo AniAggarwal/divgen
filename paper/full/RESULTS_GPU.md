@@ -13,7 +13,19 @@ paper's s/iter number. Data: `e1_gradient/`. Paper: adds the same-hardware
 gradient row to Table 1 (via the E5 unified re-score), plus measured s/iter
 and peak memory to the efficiency discussion.
 
-## E2 — matched-compute random-search control — RUNNING (capped at 256 prompts)
+## E2 — matched-compute random-search control — DONE (256 prompts)
+**Outcome:** random search at the matched per-prompt render budget reaches
+DINO 0.683 / DreamSim 0.319 / LPIPS 0.683 / CLIP 0.359 / Vendi 2.21 —
+decisively **below** breeding (0.790 / 0.437 / 0.745 / 0.393 / 2.85) on every
+axis. Paired Wilcoxon over the 256-prompt intersection with `geneval_merged`:
+all five metrics significant at p<10⁻²⁵ (Holm-corrected; DINO gap +0.098).
+Blind luck at equal compute does not reach the bred result — structured
+selection is doing real work. Data: `e2_random/`, `stats_results.json`.
+Paper: activates the "Random search (matched)" row in Table 1 and the
+"is it selection, or is the landscape just easy?" paragraph. Claim unchanged
+(breeding > random), now with a hard significance number behind it.
+
+### (historical) E2 setup note — capped at 256 prompts
 Per-prompt render budgets extracted from the archived full552+ext+ext2
 histories (median 21.1k renders/prompt; see `render_budget_by_prompt.json`).
 Same selection rule, surrogate profile, and exact final scoring as breeding.
