@@ -13,12 +13,18 @@ paper's s/iter number. Data: `e1_gradient/`. Paper: adds the same-hardware
 gradient row to Table 1 (via the E5 unified re-score), plus measured s/iter
 and peak memory to the efficiency discussion.
 
-## E2 — matched-compute random-search control (553) — QUEUED
+## E2 — matched-compute random-search control — RUNNING (capped at 256 prompts)
 Per-prompt render budgets extracted from the archived full552+ext+ext2
-histories (median 21.1k renders/prompt, 12.1M total; see
-`render_budget_by_prompt.json`). Same selection rule, surrogate profile, and
-exact final scoring as breeding. Paper: the "is it selection or luck" row of
-Table 1; decision rule per GPU_PLAN.
+histories (median 21.1k renders/prompt; see `render_budget_by_prompt.json`).
+Same selection rule, surrogate profile, and exact final scoring as breeding.
+**Scope decision (2026-07-05, flagged for verification):** capped at the first
+256 prompts rather than 553. At matched compute the breeding-vs-random gap is
+large (~0.08 DINO), so 256 paired prompts give an overwhelmingly powered
+Wilcoxon while costing ~1/3 the GPU time; the ~10 freed GPU-hours fund the
+diverse night-queue experiments the user asked for. The paired test uses the
+256-prompt intersection with `geneval_merged`. Resume to 553 anytime with
+`EXPECT=553 E2_END=553 bash e2_random/run_e2.sh`. Paper: the "is it selection
+or luck" row of Table 1.
 
 ## E3 — CMA-DCT at 553 prompts + exact re-scoring — QUEUED
 The exploration winner scaled 40→553 prompts with the 40-prompt script's flaw
