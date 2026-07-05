@@ -136,7 +136,8 @@ class FitnessEvaluator:
     @torch.no_grad()
     def _quality_of_set(self, images: torch.Tensor, prompt: str, rewards: list) -> Dict[str, float]:
         """Mean per-image reward scores for one set of images."""
-        prep = self.preprocess(images)
+        # reward models run in the pipeline dtype (fp16 HPS convs reject fp32)
+        prep = self.preprocess(images).to(self.model_dtype)
         scores: Dict[str, float] = {}
         for rl in rewards:
             loss = rl(prep, prompt)

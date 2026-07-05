@@ -34,6 +34,8 @@ DECIMAL = re.compile(r"(?<![\w.\-])\d+\.\d+(?![\w.])")
 WHITELIST = {
     "0.9",     # geometry margin, includegraphics width fractions
     "0.95",    # figure width fraction
+    "0.8",     # figure width fraction
+    "0.75",    # geometry margin (full paper)
     "2508.15773",  # arXiv id in the bibliography
     "0.05",    # sigma anneal target mentioned as method config (spec'd, not measured)
     "1.0",     # objective weights (config)
