@@ -48,7 +48,12 @@ log "E2 done; kicking E5-rand (overlaps E3)"
 e5bg rand
 
 # ---- E3 (CMA-DCT, 553) ----------------------------------------------------
-if [ ! -f $P/e3_cmadct/DONE ]; then
+# Guard: E3 may have been launched early to pair with the still-running E1
+# (fills E1's 23%-util idle). If so, wait for it rather than duplicating.
+if pgrep -f 'e3_cmadct/run_e3.sh' >/dev/null || pgrep -f '[e]3_cmadct.py' >/dev/null; then
+  log "E3 already running (early-launched, paired with E1) -- waiting for DONE"
+  waitdone $P/e3_cmadct/DONE
+elif [ ! -f $P/e3_cmadct/DONE ]; then
   log "E3 start"
   bash $P/e3_cmadct/run_e3.sh >> "$LOG" 2>&1
 fi
