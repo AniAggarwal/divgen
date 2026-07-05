@@ -34,7 +34,12 @@ log "E1 finalized+uploaded; kicking E5-grad (overlaps E2), re-finalize E1 after"
   bash $P/upload_exp.sh e5_judges >> "$LOG" 2>&1 ) &
 
 # ---- E2 (matched-compute random control, capped at 256) -------------------
-if [ ! -f $P/e2_random/DONE ]; then
+# Guard: if an E2 is already running (e.g. a concurrency test paired with E1),
+# wait for it rather than launching a duplicate.
+if pgrep -f 'e2_random/run_e2.sh' >/dev/null || pgrep -f 'e2_random.py' >/dev/null; then
+  log "E2 already running (concurrent) -- waiting for its DONE instead of relaunching"
+  waitdone $P/e2_random/DONE
+elif [ ! -f $P/e2_random/DONE ]; then
   log "E2 start (cap 256)"
   EXPECT=256 E2_END=256 bash $P/e2_random/run_e2.sh >> "$LOG" 2>&1
 fi

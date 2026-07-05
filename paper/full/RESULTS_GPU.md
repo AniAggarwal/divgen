@@ -58,6 +58,17 @@ images land.
 ## E10 — CMA covariance spectrum (from E3) + transfer band decomposition — QUEUED
 ## E11 — seed variance (20 prompts × 3 seeds) — QUEUED
 
+## Scheduling / cost notes (2026-07-05)
+Measured on the B200: the gradient baseline (E1) runs at ~120 s/prompt **solo
+but only 23% GPU utilization** — latency-bound by its small B=4 batch and
+per-iteration Python/optimizer gaps. Running E1 concurrently with E2 (the
+random control) fills those idle cycles: E1 slows to ~180 s/prompt but E2
+progresses in parallel, and the pair completes in ~21.6 h vs ~27.7 h serial
+(~6 h / ~$25 saved), so **E1∥E2 run concurrently**. The heavier, higher-util
+stages (E3, tail) run one-at-a-time; the IO-bound E5 judging sub-runs overlap
+whatever compute stage is active. `pipeline_driver.sh` enforces this and never
+lets the GPU idle until the night queue drains.
+
 ## Infrastructure notes
 - `paper/full/GPU_PLAN.md` is a marked reconstruction (original never reached
   any remote; see its provenance note).
