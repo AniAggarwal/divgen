@@ -31,8 +31,8 @@ H = W = 64
 CUT = 42            # k+l <= 42 of max 126: the lowest third of radial bands
 
 cfg = Config(); cfg.paths.cache_dir = "/workspace/repos/divgen/cache"
-cfg.diversity.dino.enable = True
-cfg.rewards.clip.enable = True
+cfg.diversity.dino.enable = True; cfg.diversity.dino.weight = 1.0
+cfg.rewards.clip.enable = True; cfg.rewards.clip.weighting = 1.0
 device = torch.device("cuda"); dtype = torch.float16
 divs, _ = get_diversity_objectives(cfg, device, cfg.paths.cache_dir)
 rews = get_reward_losses(cfg, dtype, device, cfg.paths.cache_dir)
