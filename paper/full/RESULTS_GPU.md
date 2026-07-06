@@ -155,8 +155,14 @@ lets the GPU idle until the night queue drains.
   0.004 (DINO) / 0.002 (CLIP) — an order of magnitude below every gap discussed
   in the paper. Table-1 numbers are stable. Data: `e11_seeds/`.
 
-## E10b — transfer band decomposition — RE-RUNNING
-Failed first pass on a logging KeyError (post-evolve raw uses `_diversity` not
-`diversity_dino`); fixed defensively and re-launched solo via
-`finish_pipeline.sh`. Result folds into the "bred noise transfers across
-models" analysis when done.
+## E10b — transfer band decomposition — DONE
+**Outcome:** SDXL-bred noise replayed zero-shot through PixArt lifts DINO
+diversity **+26.3%** over i.i.d.; band-limiting the transferred delta shows the
+effect is **almost entirely low-frequency** — low-band-only recovers +25.6%
+(97% of the full effect), high-band-only only +1.6%. Clean confirmation of the
+source paper's spectral story: what transfers across models is the
+low-frequency structure of the bred noise, not model-specific detail. (Two
+bugs fixed en route: a log KeyError, and objective weights left at their 0.0
+default that made the first run a no-op — both caught before integration.)
+Data: `e10_transfer_bands/`. Paper: activates the band decomposition in the
+"bred noise transfers across models" paragraph.
