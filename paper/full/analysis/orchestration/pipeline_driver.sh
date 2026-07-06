@@ -1,13 +1,13 @@
 #!/bin/bash
-# Master driver: runs the whole campaign as a SERIAL compute pipeline so exactly
-# one diffusion/gradient job uses the B200 at a time (measured: 3-way contention
-# cost ~70% throughput on E1). The light, IO-bound E5 judging sub-runs are the
-# only jobs allowed to overlap a compute job (they fill its GPU bubbles).
+# Master driver: STRICTLY SERIAL — exactly one GPU job at a time (per user
+# directive: no concurrent jobs that contend; measured E1+E3 slowed E1 ~67%).
+# Even the light E5 judging sub-runs run in the foreground between compute
+# stages, not overlapping them.
 #
-# Order (strict priority): E1 (running externally) -> E2(256) -> E3 -> tail
-# (E6-E9,E11) -> E10b -> night queue. Every stage is DONE-flag guarded and
-# resume-safe, so the driver can be re-launched and picks up where it left off.
-# GPU never idles until the night queue drains.
+# Order (strict priority): E1 -> E5-grad -> E5-rand -> E3 -> E5-cmadct ->
+# tail (E6-E9,E11) -> E10b -> STOP. The night queue of EXTRA experiments does
+# NOT auto-run; it is gated behind $P/NIGHT_OK (create it to allow the extras).
+# Every stage is DONE-flag guarded and resume-safe.
 source /workspace/evodiv.env
 cd /workspace/repos/divgen
 P=/workspace/runs/paperprep
@@ -15,53 +15,36 @@ LOG=$P/driver.log
 log(){ echo "[$(date -u +%FT%TZ)] DRIVER: $*" >> "$LOG"; }
 waitdone(){ while [ ! -f "$1" ]; do sleep 60; done; }
 
-# light E5 judging sub-run (overlaps the next compute stage), then upload
-e5bg(){ local m=$1; ( E5_METHODS=$m python $P/e5_judges/e5_judges.py \
-        >> $P/e5_judges/run_$m.log 2>&1; bash $P/upload_exp.sh e5_judges \
-        >> "$LOG" 2>&1 ) & }
+# E5 judging sub-run, FOREGROUND (serial), then upload
+e5run(){ local m=$1; log "E5-$m start (serial)"
+  E5_METHODS=$m python $P/e5_judges/e5_judges.py >> $P/e5_judges/run_$m.log 2>&1
+  bash $P/upload_exp.sh e5_judges >> "$LOG" 2>&1; log "E5-$m done"; }
 
-log "driver up; pid $$"
+log "driver (serial) up; pid $$"
 
 # ---- E1 (launched externally via run_e1.sh) -------------------------------
 log "waiting for E1/DONE"
 waitdone $P/e1_gradient/DONE
 python $P/finalize_e1.py >> "$LOG" 2>&1
 bash $P/upload_exp.sh e1_gradient >> "$LOG" 2>&1
-log "E1 finalized+uploaded; kicking E5-grad (overlaps E2), re-finalize E1 after"
-( E5_METHODS=grad python $P/e5_judges/e5_judges.py >> $P/e5_judges/run_grad.log 2>&1
-  python $P/finalize_e1.py >> "$LOG" 2>&1          # now with rescored row
-  bash $P/upload_exp.sh e1_gradient >> "$LOG" 2>&1
-  bash $P/upload_exp.sh e5_judges >> "$LOG" 2>&1 ) &
+e5run grad                                     # judge E1's images (serial)
+python $P/finalize_e1.py >> "$LOG" 2>&1        # re-finalize with rescored row
+bash $P/upload_exp.sh e1_gradient >> "$LOG" 2>&1
 
-# ---- E2 (matched-compute random control, capped at 256) -------------------
-# Guard: if an E2 is already running (e.g. a concurrency test paired with E1),
-# wait for it rather than launching a duplicate.
-if pgrep -f 'e2_random/run_e2.sh' >/dev/null || pgrep -f 'e2_random.py' >/dev/null; then
-  log "E2 already running (concurrent) -- waiting for its DONE instead of relaunching"
-  waitdone $P/e2_random/DONE
-elif [ ! -f $P/e2_random/DONE ]; then
-  log "E2 start (cap 256)"
-  EXPECT=256 E2_END=256 bash $P/e2_random/run_e2.sh >> "$LOG" 2>&1
-fi
+# ---- E2 already complete; judge its images (serial) -----------------------
 [ -f $P/e2_random/DONE ] && bash $P/upload_exp.sh e2_random >> "$LOG" 2>&1
-log "E2 done; kicking E5-rand (overlaps E3)"
-e5bg rand
+e5run rand
 
-# ---- E3 (CMA-DCT, 553) ----------------------------------------------------
-# Guard: E3 may have been launched early to pair with the still-running E1
-# (fills E1's 23%-util idle). If so, wait for it rather than duplicating.
-if pgrep -f 'e3_cmadct/run_e3.sh' >/dev/null || pgrep -f '[e]3_cmadct.py' >/dev/null; then
-  log "E3 already running (early-launched, paired with E1) -- waiting for DONE"
-  waitdone $P/e3_cmadct/DONE
+# ---- E3 (CMA-DCT, 553) solo -----------------------------------------------
+if pgrep -f '[e]3_cmadct.py' >/dev/null; then
+  log "E3 already running -- waiting"; waitdone $P/e3_cmadct/DONE
 elif [ ! -f $P/e3_cmadct/DONE ]; then
-  log "E3 start"
-  bash $P/e3_cmadct/run_e3.sh >> "$LOG" 2>&1
+  log "E3 start (solo)"; bash $P/e3_cmadct/run_e3.sh >> "$LOG" 2>&1
 fi
 [ -f $P/e3_cmadct/DONE ] && bash $P/upload_exp.sh e3_cmadct >> "$LOG" 2>&1
-log "E3 done; kicking E5-cmadct (overlaps tail)"
-e5bg cmadct
+e5run cmadct
 
-# ---- tail experiments E6-E9, E11 ------------------------------------------
+# ---- tail experiments E6-E9, E11 (serial) ---------------------------------
 if [ ! -f $P/tail.DONE ]; then
   log "tail (E6-E9,E11) start"
   bash $P/run_tail_experiments.sh >> "$LOG" 2>&1 && touch $P/tail.DONE
@@ -81,8 +64,13 @@ fi
 log "PLANNED PIPELINE E1-E11 COMPLETE"
 touch $P/PIPELINE_DONE
 
-# ---- night queue (extra experiments; user asked to keep GPU busy) ---------
-log "entering night queue"
-bash $P/night_queue.sh >> "$LOG" 2>&1
-touch $P/NIGHT_DONE
-log "ALL WORK COMPLETE (planned pipeline + night queue)"
+# ---- night queue: GATED. Only runs if the user opts in via NIGHT_OK. -------
+if [ -f $P/NIGHT_OK ]; then
+  log "NIGHT_OK present -> entering night queue (extra experiments)"
+  bash $P/night_queue.sh >> "$LOG" 2>&1
+  touch $P/NIGHT_DONE
+  log "ALL WORK COMPLETE (planned pipeline + night queue)"
+else
+  log "night queue gated (no NIGHT_OK); planned pipeline done, GPU idle. STOP."
+  touch $P/NIGHT_DONE   # lets the safety daemon exit
+fi
