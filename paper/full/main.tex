@@ -191,6 +191,11 @@ better. Our rows report the selected set per prompt, averaged over prompts.
 \caption{GenEval, SDXL-Turbo, white-noise initialization, set size 4. Top:
 rows quoted from Harrington et al.\ Tab.~1. Bottom: methods run in this work
 under the official repository's metric code over all \nbNumPrompts{} prompts.
+The same-harness gradient row optimizes the repository's Tab.~2 objective
+(DPP set-diversity + HPS), so it naturally leads the set-level diversity
+metrics (and their perceptual correlates DreamSim/LPIPS), while breeding
+optimizes DINO+CLIP and leads those; each method leads the axes it selects
+for (bold = column max).
 \ifdefined\nbRandDino Random search uses the identical per-prompt render
 budget as breeding (\nbRandTotalRendersM M renders total).\fi}
 \label{tab:main}
@@ -202,11 +207,11 @@ Method & DINO & DreamSim & LPIPS & CLIP \\
 \midrule
 i.i.d. & \nbPaperIidDino & \nbPaperIidDreamsim & \nbPaperIidLpips & \nbPaperIidClip \\
 Parmar et al.~\cite{parmar2025scaling} & \nbParmarDino & \nbParmarDreamsim & \nbParmarLpips & \nbParmarClip \\
-Harrington et al. & \nbPaperGradDino & \nbPaperGradDreamsim & \nbPaperGradLpips & \nbPaperGradClip \\
+Harrington et al. & \nbPaperGradDino & \nbPaperGradDreamsim & \textbf{\nbPaperGradLpips} & \nbPaperGradClip \\
 \midrule
 i.i.d.\ (gen.~0, our harness) & \nbInitDino & \nbInitDreamsim & \nbInitLpips & \nbInitClip \\
 \ifdefined\nbGradSameDino
-Gradient (same harness) & \nbGradSameDino & \nbGradSameDreamsim & \nbGradSameLpips & \nbGradSameClip \\
+Gradient (same harness, DPP+HPS obj.) & \nbGradSameDino & \textbf{\nbGradSameDreamsim} & \nbGradSameLpips & \nbGradSameClip \\
 \fi
 \ifdefined\nbRandDino
 Random search (matched) & \nbRandDino & \nbRandDreamsim & \nbRandLpips & \nbRandClip \\
@@ -214,7 +219,7 @@ Random search (matched) & \nbRandDino & \nbRandDreamsim & \nbRandLpips & \nbRand
 \ifdefined\nbCmadctDino
 CMA-DCT (1024-dim) & \nbCmadctDino & \nbCmadctDreamsim & \nbCmadctLpips & \nbCmadctClip \\
 \fi
-Bred (full space) & \textbf{\nbBredDino} & \textbf{\nbBredDreamsim} & \nbBredLpips & \nbBredClip \\
+Bred (full space, DINO+CLIP obj.) & \textbf{\nbBredDino} & \nbBredDreamsim & \nbBredLpips & \textbf{\nbBredClip} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -234,11 +239,17 @@ $\partial(\mathrm{image})/\partial x_0$.
 and hardware, so we also run the repository's own optimizer (DPP objective
 with HPS quality, their Tab.~2 configuration; lr 6, 150 iterations, $B{=}4$)
 on our hardware over the identical prompt list, and re-score its final sets
-with the same metric code as every other row. It reaches
-\nbGradSameDino{} DINO / \nbGradSameClip{} CLIP at
+with the same metric code as every other row, at
 \nbGradSameSecPerIter{}\,s per iteration and \nbGradSamePeakMemGb{}\,GB peak
 memory on a B200 (their reported \nbPaperGradSecPerIterAHundred{}\,s per
-iteration on an A100).
+iteration on an A100). Because it optimizes DPP+HPS rather than DINO+CLIP,
+the two methods split the metrics along their objectives: on the same metric
+code breeding leads DINO (\nbBredDino{} vs \nbGradSameDino) and CLIP
+(\nbBredClip{} vs \nbGradSameClip), both paired-significant, while the
+gradient run leads the set-level diversity it directly maximizes --- DPP
+(\nbGradSameDpp{} vs \nbBredDpp) and Vendi (\nbGradSameVendi{} vs \nbBredVendi)
+--- and, with it, DreamSim and LPIPS. Neither dominates; each wins the axes it
+selects for, on identical hardware and scoring.
 \fi
 
 \ifdefined\nbRandDino
@@ -270,10 +281,16 @@ working \emph{parameterization} of the search.
 \ifdefined\nbJudgeBredImagereward
 \paragraph{Judges nobody optimized.} Because our quality objective is
 CLIPScore, CLIP comparisons can be discounted as reward hacking. We therefore
-score every method's final image sets with three preference models absent
-from every objective (Fig.~\ref{fig:judges}): ImageReward, PickScore, and
-HPSv2.1\ifdefined\nbGradSameDino{} (the gradient baseline optimized HPS-v2,
-so its HPSv2.1 column carries an asterisk in spirit\fi).
+score every method's final sets with three preference models absent from the
+bred objective (Fig.~\ref{fig:judges}): ImageReward, PickScore, and HPSv2.1.
+The result favors breeding on the judges neither method targeted: breeding
+beats the same-harness gradient run on ImageReward
+(\nbJudgeBredImagereward{} vs \nbJudgeGradImagereward,
+$\nbStatBredGradImagerewardP$, paired) and ties on PickScore
+(\nbJudgeBredPickscore{} vs \nbJudgeGradPickscore, n.s.). The gradient run
+leads only on HPSv2.1 (\nbJudgeGradHpsv{} vs \nbJudgeBredHpsv) --- the metric
+it directly optimized (HPS-v2). On preferences \emph{no} method trained on,
+breeding is ahead or even.
 \fi
 
 \begin{table}[t]

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.7.4)  5 JUL 2026 23:54
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.7.4)  6 JUL 2026 02:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -458,18 +458,19 @@ File: ../figures/convergence.png Graphic file (type png)
 Package pdftex.def Info: ../figures/convergence.png  used on input line 167.
 (pdftex.def)             Requested size: 480.59395pt x 135.8709pt.
 [2]
-Underfull \hbox (badness 1342) in paragraph at lines 346--354
+Underfull \hbox (badness 1342) in paragraph at lines 363--371
  []\OT1/ptm/b/n/10 The mem-ory wall, mea-sured.[] \OT1/ptm/m/n/10 Ta-ble [][]3[
 ][] com-pares peak
  []
 
 
-Underfull \hbox (badness 1694) in paragraph at lines 346--354
+Underfull \hbox (badness 1694) in paragraph at lines 363--371
 \OT1/ptm/m/n/10 against 44.4GB forward-only --- the dif-fer-ence be-tween
  []
 
+[3 <../figures/convergence.png>]
 
-LaTeX Warning: File `judges.png' not found on input line 453.
+LaTeX Warning: File `judges.png' not found on input line 470.
 
 
 ! Package pdftex.def Error: File `judges.png' not found: using draft setting.
@@ -478,27 +479,43 @@ See the pdftex.def package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.453 ...udegraphics[width=\linewidth]{judges.png}
+l.470 ...udegraphics[width=\linewidth]{judges.png}
                                                   
 Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
 LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 4
-53.
+70.
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-Underfull \vbox (badness 4569) has occurred while \output is active []
 
- [3 <../figures/convergence.png>]
-Underfull \vbox (badness 10000) has occurred while \output is active []
+LaTeX Warning: File `cma_spectrum.png' not found on input line 480.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 572--575
+! Package pdftex.def Error: File `cma_spectrum.png' not found: using draft sett
+ing.
+
+See the pdftex.def package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.480 ...phics[width=\linewidth]{cma_spectrum.png}
+                                                  
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Underfull \vbox (badness 6808) has occurred while \output is active []
+
+ [4]
+Underfull \hbox (badness 10000) in paragraph at lines 589--592
 []\OT1/ptm/m/n/9 Black For-est Labs.  FLUX.1.  [][]$\OT1/pcr/m/n/9 https : / /
  []
 
-[4] (./main.aux)
+[5
+
+] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -507,13 +524,13 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: C4D295162F22A389BF1775B2E1ABEADE;1051.
  ) 
 Here is how much of TeX's memory you used:
- 11789 strings out of 476182
- 185483 string characters out of 5795596
- 1950975 words of memory out of 5000000
- 33586 multiletter control sequences out of 15000+600000
+ 11845 strings out of 476182
+ 186743 string characters out of 5795596
+ 1948975 words of memory out of 5000000
+ 33638 multiletter control sequences out of 15000+600000
  588120 words of font info for 89 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 75i,11n,79p,505b,448s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,11n,79p,772b,448s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share
 /texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texliv
@@ -529,10 +546,10 @@ r/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texli
 ve/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/f
 onts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/
 times/utmri8a.pfb>
-Output written on main.pdf (4 pages, 264641 bytes).
+Output written on main.pdf (5 pages, 268200 bytes).
 PDF statistics:
- 225 PDF objects out of 1000 (max. 8388607)
- 183 compressed objects within 2 object streams
- 50 named destinations out of 1000 (max. 500000)
+ 233 PDF objects out of 1000 (max. 8388607)
+ 190 compressed objects within 2 object streams
+ 54 named destinations out of 1000 (max. 500000)
  78 words of extra memory for PDF output out of 10000 (max. 10000000)
 

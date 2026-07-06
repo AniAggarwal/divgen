@@ -5,7 +5,30 @@ claims changed. Statuses update as the campaign progresses; final version
 committed when E1–E11 conclude. Data root: `/workspace/runs/paperprep/<exp>`
 mirrored to `s3://anirud-dev/evodiv-divgen-fork/2026-07-04/paperprep-<exp>.tar.gz`.
 
-## E1 — same-harness gradient baseline (553 GenEval prompts) — RUNNING
+## E1 — same-harness gradient baseline (553 GenEval prompts) — DONE
+**Outcome (important nuance):** the repo's gradient optimizer via
+`geneval_sdxl_white.yaml` optimizes **DPP + HPS** (its Tab-2 objective), not the
+DINO+CLIP that breeding uses. Rescored by the identical metric code over its
+553 image sets: DINO 0.772, DreamSim 0.460, LPIPS 0.752, CLIP 0.367, Vendi
+3.99, DPP 0.999; 0.82 s/iter, 18.8 GB peak on B200. So on the same hardware and
+scoring the two methods **split the metrics along their objectives**: breeding
+leads DINO (+0.020, p<1e-19) and CLIP (+0.029, p<1e-77); the gradient run leads
+the set-level diversity it directly maximizes (DPP, Vendi) and with it
+DreamSim/LPIPS. Neither dominates. **Claim change:** the "ahead on 3 of 4"
+headline is kept *only against the published Harrington numbers* (still true);
+the same-harness row is presented as an objective-split, not a clean win, with
+Table-1 bold = true column max (gradient's DreamSim is bolded). Independent
+judges (E5) break the tie in breeding's favor — see E5. s/iter + peak-mem enter
+the efficiency discussion. Data: `e1_gradient/`, `stats_results.json`.
+
+### E5 (partial) — bred vs same-harness gradient on independent judges
+Breeding beats the gradient run on **ImageReward** (0.671 vs 0.583, p<1e-2,
+paired) and ties **PickScore** (22.54 vs 22.53, n.s.); the gradient run leads
+only **HPSv2.1** (0.286 vs 0.267) — the metric it directly optimized. On
+preference models neither method's breeding objective targeted, breeding is
+ahead-or-even. Rand/CMA-DCT judging queued behind their runs.
+
+## (historical) E1 setup note
 The repository's own optimizer (`configs/geneval_sdxl_white.yaml`: DPP+HPS,
 lr 6, 150 iters, B=4) over all 553 prompts with timing + peak-memory
 instrumentation. Solo-window timing (prompts 0–9, GPU otherwise idle) is the

@@ -212,7 +212,9 @@ def main():
     for name, g in [("cmadct_vs_bred_dino", "StatCmadctDino"),
                     ("bred_vs_grad_dino", "StatBredGradDino"),
                     ("bred_vs_rand_dino", "StatBredRandDino"),
-                    ("bred_vs_grad_lpips", "StatBredGradLpips")]:
+                    ("bred_vs_grad_lpips", "StatBredGradLpips"),
+                    ("bred_vs_grad_imagereward", "StatBredGradImagereward"),
+                    ("bred_vs_grad_rescored_dino", "StatBredGradRescoredDino")]:
         if name in S:
             macro(f"nb{g}P", pfmt(S[name]["holm_p"]))
             macro(f"nb{g}Diff", f"{S[name]['mean_diff']:+.3f}")
