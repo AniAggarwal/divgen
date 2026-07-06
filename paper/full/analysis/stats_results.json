@@ -47,7 +47,7 @@
  "bred_vs_grad_hpsv21": {
   "family": "e5_judges",
   "frac_a_wins": 0.162748643761302,
-  "holm_p": 9.438802741476099e-65,
+  "holm_p": 2.202387306344423e-64,
   "mean_a": 0.26672448818765543,
   "mean_b": 0.2858818012810098,
   "mean_diff": -0.01915731309335443,
@@ -224,6 +224,36 @@
   "significant_05": true,
   "wilcoxon_p": 2.1671803296371157e-40
  },
+ "bred_vs_rand_hpsv21": {
+  "family": "e5_judges",
+  "frac_a_wins": 0.34375,
+  "holm_p": 1.2116192244722525e-09,
+  "mean_a": 0.26252925395965576,
+  "mean_b": 0.27049803733825684,
+  "mean_diff": -0.007968783378601074,
+  "median_diff": -0.006622314453125,
+  "metric": "hpsv21",
+  "n": 256,
+  "run_a": "paperprep/e5_judges:bred",
+  "run_b": "paperprep/e5_judges:rand",
+  "significant_05": true,
+  "wilcoxon_p": 2.019365374120421e-10
+ },
+ "bred_vs_rand_imagereward": {
+  "family": "e5_judges",
+  "frac_a_wins": 0.3828125,
+  "holm_p": 0.00044053202532387775,
+  "mean_a": 0.6356668934122354,
+  "mean_b": 0.7148542147643866,
+  "mean_diff": -0.07918732135215123,
+  "median_diff": -0.09060041233897209,
+  "metric": "imagereward",
+  "n": 256,
+  "run_a": "paperprep/e5_judges:bred",
+  "run_b": "paperprep/e5_judges:rand",
+  "significant_05": true,
+  "wilcoxon_p": 0.0001468440084412926
+ },
  "bred_vs_rand_lpips": {
   "family": "e2_random",
   "frac_a_wins": 0.9296875,
@@ -239,6 +269,21 @@
   "significant_05": true,
   "wilcoxon_p": 1.4161253882162016e-41
  },
+ "bred_vs_rand_pickscore": {
+  "family": "e5_judges",
+  "frac_a_wins": 0.34765625,
+  "holm_p": 7.721235429184011e-08,
+  "mean_a": 22.34080345928669,
+  "mean_b": 22.547957450151443,
+  "mean_diff": -0.20715399086475372,
+  "median_diff": -0.22797679901123047,
+  "metric": "pickscore",
+  "n": 256,
+  "run_a": "paperprep/e5_judges:bred",
+  "run_b": "paperprep/e5_judges:rand",
+  "significant_05": true,
+  "wilcoxon_p": 1.5442470858368023e-08
+ },
  "bred_vs_rand_vendi": {
   "family": "e2_random",
   "frac_a_wins": 0.9296875,
@@ -253,5 +298,50 @@
   "run_b": "paperprep/e2_random",
   "significant_05": true,
   "wilcoxon_p": 3.045346133062068e-41
+ },
+ "cmadct_vs_bred_clip": {
+  "family": "e3_promotion",
+  "frac_a_wins": 0.5949367088607594,
+  "holm_p": 1.0617919324720553e-10,
+  "mean_a": 0.40113698010849913,
+  "mean_b": 0.39346971066907777,
+  "mean_diff": 0.007667269439421337,
+  "median_diff": 0.006562499999999916,
+  "metric": "CLIP",
+  "n": 553,
+  "run_a": "paperprep/e3_cmadct",
+  "run_b": "geneval_merged",
+  "significant_05": true,
+  "wilcoxon_p": 1.0617919324720553e-10
+ },
+ "cmadct_vs_bred_dino": {
+  "family": "e3_promotion",
+  "frac_a_wins": 0.24050632911392406,
+  "holm_p": 1.2929797613169329e-33,
+  "mean_a": 0.7670908370888901,
+  "mean_b": 0.7898185580807181,
+  "mean_diff": -0.02272772099182791,
+  "median_diff": -0.02379465103149414,
+  "metric": "diversity_dino",
+  "n": 553,
+  "run_a": "paperprep/e3_cmadct",
+  "run_b": "geneval_merged",
+  "significant_05": true,
+  "wilcoxon_p": 6.4648988065846646e-34
+ },
+ "rand_vs_grad_imagereward": {
+  "family": "e5_judges",
+  "frac_a_wins": 0.66796875,
+  "holm_p": 9.839126151373599e-07,
+  "mean_a": 0.7148542147643866,
+  "mean_b": 0.5711606065206922,
+  "mean_diff": 0.14369360824369437,
+  "median_diff": 0.10830408288165927,
+  "metric": "imagereward",
+  "n": 256,
+  "run_a": "paperprep/e5_judges:rand",
+  "run_b": "paperprep/e5_judges:grad",
+  "significant_05": true,
+  "wilcoxon_p": 2.4597815378433997e-07
  }
 }

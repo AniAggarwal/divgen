@@ -61,7 +61,26 @@ diverse night-queue experiments the user asked for. The paired test uses the
 `EXPECT=553 E2_END=553 bash e2_random/run_e2.sh`. Paper: the "is it selection
 or luck" row of Table 1.
 
-## E3 — CMA-DCT at 553 prompts + exact re-scoring — QUEUED
+## E3 — CMA-DCT at 553 prompts + exact re-scoring — DONE
+**Outcome:** 1024-dim CMA-ES (8×8 low-freq DCT block/channel, 64× fewer params)
+over 553 prompts, exact-rescored: DINO 0.767, DreamSim 0.420, LPIPS **0.842**,
+CLIP **0.401**, Vendi 2.89, DPP 0.884 — the **highest CLIP and LPIPS of any
+method**, within 0.023 DINO of full-space breeding.
+**Decision rule applied:** CMA-DCT is significantly *below* breeding on DINO
+(−0.023, paired Wilcoxon p<10⁻³³ at n=553), so it is **NOT** promoted to a
+headline DINO win. Kept the "matches at 64× fewer dimensions" framing — which
+is if anything stronger than expected (it leads on CLIP+LPIPS at 64× fewer
+params). Table-1 bold = column max: CMA-DCT bolded on CLIP+LPIPS, breeding on
+DINO, gradient on DreamSim.
+**E10a (covariance dump):** honest finding — the genome is already low-freq
+restricted; within the 8×8 block the adapted variance is ~uniform (lowest
+third holds 23%, ≈ its 23% coefficient share), i.e. search uses the whole
+low-freq block, not just the lowest modes. Claim corrected from "concentrates
+in low freq" (would be an overclaim vs the uniform baseline) to "exploits the
+whole low-freq block." Figure: `cma_spectrum.png`. Data: `e3_cmadct/` (incl.
+per-prompt `cma_cov.npz`), `stats_results.json`.
+
+## (queued) E3 setup note
 The exploration winner scaled 40→553 prompts with the 40-prompt script's flaw
 fixed (its "exact re-score" was dead code; winners were surrogate-scored).
 Winner latents tracked, exact-rescored every 10 iters and at the end; final

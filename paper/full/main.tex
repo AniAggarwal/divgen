@@ -207,7 +207,7 @@ Method & DINO & DreamSim & LPIPS & CLIP \\
 \midrule
 i.i.d. & \nbPaperIidDino & \nbPaperIidDreamsim & \nbPaperIidLpips & \nbPaperIidClip \\
 Parmar et al.~\cite{parmar2025scaling} & \nbParmarDino & \nbParmarDreamsim & \nbParmarLpips & \nbParmarClip \\
-Harrington et al. & \nbPaperGradDino & \nbPaperGradDreamsim & \textbf{\nbPaperGradLpips} & \nbPaperGradClip \\
+Harrington et al. & \nbPaperGradDino & \nbPaperGradDreamsim & \nbPaperGradLpips & \nbPaperGradClip \\
 \midrule
 i.i.d.\ (gen.~0, our harness) & \nbInitDino & \nbInitDreamsim & \nbInitLpips & \nbInitClip \\
 \ifdefined\nbGradSameDino
@@ -217,9 +217,9 @@ Gradient (same harness, DPP+HPS obj.) & \nbGradSameDino & \textbf{\nbGradSameDre
 Random search (matched) & \nbRandDino & \nbRandDreamsim & \nbRandLpips & \nbRandClip \\
 \fi
 \ifdefined\nbCmadctDino
-CMA-DCT (1024-dim) & \nbCmadctDino & \nbCmadctDreamsim & \nbCmadctLpips & \nbCmadctClip \\
+CMA-DCT (1024-dim, DINO+CLIP obj.) & \nbCmadctDino & \nbCmadctDreamsim & \textbf{\nbCmadctLpips} & \textbf{\nbCmadctClip} \\
 \fi
-Bred (full space, DINO+CLIP obj.) & \textbf{\nbBredDino} & \nbBredDreamsim & \nbBredLpips & \textbf{\nbBredClip} \\
+Bred (full space, DINO+CLIP obj.) & \textbf{\nbBredDino} & \nbBredDreamsim & \nbBredLpips & \nbBredClip \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -267,15 +267,19 @@ selection is doing real work.
 \fi
 
 \ifdefined\nbCmadctDino
-\paragraph{The low-frequency subspace suffices.} CMA-DCT searches 64$\times$
-fewer dimensions and reaches \nbCmadctDino{} DINO / \nbCmadctClip{} CLIP with
-exact re-scoring over all \nbNumPrompts{} prompts.
-\ifdefined\nbStatCmadctDinoP
-Paired against full-space breeding on DINO the difference is
-\nbStatCmadctDinoDiff{} ($\nbStatCmadctDinoP$).
-\fi
-The source paper's spectral analysis is thus not only an explanation but a
-working \emph{parameterization} of the search.
+\paragraph{The low-frequency subspace suffices.} Searching an $8{\times}8$
+low-frequency DCT block per channel --- \textbf{64$\times$ fewer parameters}
+than the full latent --- CMA-ES reaches, with exact re-scoring over all
+\nbNumPrompts{} prompts, the \emph{highest} CLIP (\nbCmadctClip) and LPIPS
+(\nbCmadctLpips) of any method here, and comes within
+\nbStatCmadctDinoDiff{} DINO of full-space breeding (\nbCmadctDino{} vs
+\nbBredDino; the gap is small but paired-significant at $n{=}\nbNumPrompts$,
+$\nbStatCmadctDinoP$). We therefore do not claim it beats breeding on DINO;
+we claim the opposite is what matters --- essentially the same
+quality--diversity operating point survives a 64$\times$ collapse of the
+search space. The source paper's spectral analysis is thus not only an
+explanation but a working \emph{parameterization}: the signal lives in the
+low frequencies, and searching only there costs almost nothing.
 \fi
 
 \ifdefined\nbJudgeBredImagereward
@@ -395,11 +399,18 @@ Gradient & \nbGradFluxPeakFour & \nbGradFluxPeakSixteen \\
 \label{sec:analysis}
 
 \ifdefined\nbCmaLowBandFrac
-\paragraph{Where the search happens.} Dumping the CMA covariance at the end
-of each prompt's run localizes the adapted variance: \nbCmaLowBandFrac\% of
-coordinate variance sits in the lowest third of DCT bands
-(Fig.~\ref{fig:spectrum}) --- selection rediscovers, per prompt, the same
-low-frequency story the source paper found by analyzing gradients.
+\paragraph{Where the search happens.} The CMA-DCT genome is \emph{already}
+restricted to the low-frequency $8{\times}8$ block, so the question its
+end-of-run covariance answers is how the adapted variance distributes
+\emph{within} that block. It distributes roughly evenly: the lowest third of
+the block's radial bands holds \nbCmaLowBandFrac\% of the coordinate variance
+--- essentially its \nbCmaLowBandFrac\% share of the coefficients
+(Fig.~\ref{fig:spectrum}), not a concentration onto the very lowest modes.
+Search exploits the whole low-frequency block rather than a handful of corner
+coefficients, which is consistent with the source paper locating the signal in
+the low third of the \emph{spectrum} (a band, not a point) --- and with the
+quality cost we see when the block is shrunk below $8{\times}8$
+(Appendix, dimensionality sweep).
 \fi
 
 \ifdefined\nbTransferGainPct
