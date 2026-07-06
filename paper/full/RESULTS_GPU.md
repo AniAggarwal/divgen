@@ -133,3 +133,30 @@ lets the GPU idle until the night queue drains.
   committed 3-pager exactly.
 - Model caches moved to tmpfs (/dev/shm) after two disk-full incidents; disk
   now holds only code + run outputs.
+
+## Tail experiments (E6–E9, E11) — DONE
+- **E6 (HPS-floored DPP, 40 prompts):** breeding the paper's Tab-2 objective
+  pair (DPP set-diversity + HPS floor) without a gradient lifts raw DPP log-det
+  2.22→2.59 at HPS 0.307. Non-differentiable set objective enters selection
+  directly. Data: `e6_dpp_hps/`.
+- **E7 (DPG-Bench subset, 40 dense prompts):** DINO 0.618→0.738 at CLIP 0.412 —
+  the recipe is not GenEval-specific; it generalizes to dense, paragraph-length
+  captions. Data: `e7_dpg/`.
+- **E8 (Vendi long budget, 20 prompts × 150 gens):** bred Vendi 2.25→3.34,
+  plateauing ~gen 48 — a longer selection budget *does* keep buying the metric
+  the source paper reports as saturating, up to a plateau. Figure
+  `vendi_budget.png`. Data: `e8_vendi/`.
+- **E9 (LPIPS probe, 20 prompts):** breeding LPIPS directly reaches **0.968**
+  (vs 0.745 under DINO selection) at CLIP 0.342 — our one behind-the-gradient
+  metric in Table 1 is a choice of objective, not a limit of the search.
+  **Claim strengthened:** the LPIPS deficit is fully selectable. Data:
+  `e9_lpips/`.
+- **E11 (seed variance, 20 prompts × 3 seeds):** per-metric std across seeds is
+  0.004 (DINO) / 0.002 (CLIP) — an order of magnitude below every gap discussed
+  in the paper. Table-1 numbers are stable. Data: `e11_seeds/`.
+
+## E10b — transfer band decomposition — RE-RUNNING
+Failed first pass on a logging KeyError (post-evolve raw uses `_diversity` not
+`diversity_dino`); fixed defensively and re-launched solo via
+`finish_pipeline.sh`. Result folds into the "bred noise transfers across
+models" analysis when done.

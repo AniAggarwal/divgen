@@ -155,8 +155,8 @@ def fig_spectrum():
 
 def fig_vendi_budget():
     """E8: Vendi under a long selection budget."""
-    root = os.path.join(PREP, "e8_vendi")
-    hists = _histories(root)
+    hp = glob.glob(os.path.join(PREP, "e8_vendi", "**", "history.json"), recursive=True)
+    hists = [json.load(open(p))["history"] for p in hp]
     if not hists:
         return print("skip vendi budget (no e8)")
     G = max(len(h) for h in hists)

@@ -606,6 +606,84 @@
   "n": 553
  },
  "paperprep": {
+  "e11_seeds": {
+   "mean": {
+    "CLIP": 0.3460989583333334,
+    "diversity_color": 0.1436487227678299,
+    "diversity_dino": 0.7783183564742406,
+    "diversity_dpp": 0.8618367135524749,
+    "diversity_dpp_patch": 0.9635200758775075,
+    "diversity_dpp_patch_raw": 2.67144490480423,
+    "diversity_dpp_raw": 2.389518763621648,
+    "diversity_dreamsim": 0.4751197171707948,
+    "diversity_lpips": 0.7326698074738185,
+    "diversity_tiny_l2": 0.34391913811365765,
+    "diversity_vendi": 2.7569321215152742,
+    "diversity_vendi_sscd": 3.7223368366559346
+   },
+   "n_prompts": 20,
+   "n_seeds": 3,
+   "per_seed_best": {
+    "seed0": {
+     "CLIP": 0.34368750000000003,
+     "diversity_color": 0.14764572940766812,
+     "diversity_dino": 0.780570176243782,
+     "diversity_dpp": 0.8577946066856384,
+     "diversity_dpp_patch": 0.9645672112703323,
+     "diversity_dpp_patch_raw": 2.6743481755256653,
+     "diversity_dpp_raw": 2.3783116579055785,
+     "diversity_dreamsim": 0.4707930997014046,
+     "diversity_lpips": 0.737449923157692,
+     "diversity_tiny_l2": 0.3427864208817482,
+     "diversity_vendi": 2.715113013982773,
+     "diversity_vendi_sscd": 3.7225280880928038
+    },
+    "seed1": {
+     "CLIP": 0.34725,
+     "diversity_color": 0.14184404164552689,
+     "diversity_dino": 0.7801514267921448,
+     "diversity_dpp": 0.872656986117363,
+     "diversity_dpp_patch": 0.9639796406030655,
+     "diversity_dpp_patch_raw": 2.672719085216522,
+     "diversity_dpp_raw": 2.4195189237594605,
+     "diversity_dreamsim": 0.48149483278393745,
+     "diversity_lpips": 0.7326111316680908,
+     "diversity_tiny_l2": 0.3418985515832901,
+     "diversity_vendi": 2.8480613768100738,
+     "diversity_vendi_sscd": 3.7259124159812926
+    },
+    "seed2": {
+     "CLIP": 0.347359375,
+     "diversity_color": 0.14145639725029469,
+     "diversity_dino": 0.774233466386795,
+     "diversity_dpp": 0.8550585478544235,
+     "diversity_dpp_patch": 0.9620133757591247,
+     "diversity_dpp_patch_raw": 2.667267453670502,
+     "diversity_dpp_raw": 2.370725709199905,
+     "diversity_dreamsim": 0.4730712190270424,
+     "diversity_lpips": 0.7279483675956726,
+     "diversity_tiny_l2": 0.3470724418759346,
+     "diversity_vendi": 2.7076219737529756,
+     "diversity_vendi_sscd": 3.7185700058937075
+    }
+   },
+   "std": {
+    "CLIP": 0.0020891000915964474,
+    "diversity_color": 0.0034669314391074834,
+    "diversity_dino": 0.003543809115301637,
+    "diversity_dpp": 0.009469964533503726,
+    "diversity_dpp_patch": 0.0013375046756214073,
+    "diversity_dpp_patch_raw": 0.003708342930454153,
+    "diversity_dpp_raw": 0.02625631087304669,
+    "diversity_dreamsim": 0.005637289350934753,
+    "diversity_lpips": 0.0047510495326999755,
+    "diversity_tiny_l2": 0.002766689616794545,
+    "diversity_vendi": 0.07900908048363614,
+    "diversity_vendi_sscd": 0.0036749393610842817
+   },
+   "std_clip": 0.0020891000915964474,
+   "std_dino": 0.003543809115301637
+  },
   "e1_gradient": {
    "best": {
     "HPS": 0.33849457504520797,
@@ -784,6 +862,22 @@
     "n": 553,
     "pickscore": 22.541179656982422
    },
+   "cmadct": {
+    "CLIP": 0.3990964059674503,
+    "diversity_color": 0.1318586112065729,
+    "diversity_dino": 0.7721008782360912,
+    "diversity_dpp": 0.8872580204906774,
+    "diversity_dpp_patch": 0.9636393935296678,
+    "diversity_dreamsim": 0.4201673608253058,
+    "diversity_lpips": 0.8473532864887934,
+    "diversity_tiny_l2": 0.5273088558457428,
+    "diversity_vendi": 2.913610767714585,
+    "diversity_vendi_sscd": 3.6165207958566343,
+    "hpsv21": 0.2468677265519044,
+    "imagereward": 0.5451574611299036,
+    "n": 553,
+    "pickscore": 21.330399935758567
+   },
    "grad": {
     "CLIP": 0.3672841320072332,
     "diversity_color": 0.1506174218522597,
@@ -816,6 +910,133 @@
     "n": 256,
     "pickscore": 22.547957450151443
    }
+  },
+  "e6_dpp_hps": {
+   "best": {
+    "HPS": 0.306787109375,
+    "diversity_color": 0.11582914888858795,
+    "diversity_dino": 0.6961599215865135,
+    "diversity_dpp": 0.9345349848270417,
+    "diversity_dpp_patch": 0.9381934374570846,
+    "diversity_dpp_patch_raw": 2.6012245416641235,
+    "diversity_dpp_raw": 2.591081166267395,
+    "diversity_dreamsim": 0.4710721876472235,
+    "diversity_lpips": 0.7064354583621025,
+    "diversity_tiny_l2": 0.3149999640882015,
+    "diversity_vendi": 3.3657001167535783,
+    "diversity_vendi_sscd": 3.7037172317504883
+   },
+   "init": {
+    "HPS": 0.271533203125,
+    "diversity_color": 0.09254236239939928,
+    "diversity_dino": 0.5671184748411179,
+    "diversity_dpp": 0.8001080229878426,
+    "diversity_dpp_patch": 0.8901346772909164,
+    "diversity_dpp_patch_raw": 2.467977374792099,
+    "diversity_dpp_raw": 2.2183704882860185,
+    "diversity_dreamsim": 0.2767325066030025,
+    "diversity_lpips": 0.6207153677940369,
+    "diversity_tiny_l2": 0.2704078584909439,
+    "diversity_vendi": 2.2724554985761642,
+    "diversity_vendi_sscd": 3.3317132353782655
+   },
+   "n": 40
+  },
+  "e7_dpg": {
+   "best": {
+    "CLIP": 0.4118203125,
+    "diversity_color": 0.10628389865159989,
+    "diversity_dino": 0.7379436448216439,
+    "diversity_dpp": 0.8425450682640075,
+    "diversity_dpp_patch": 0.9513939216732978,
+    "diversity_dpp_patch_raw": 2.637824070453644,
+    "diversity_dpp_raw": 2.3360309660434724,
+    "diversity_dreamsim": 0.3503736056387424,
+    "diversity_lpips": 0.7113664805889129,
+    "diversity_tiny_l2": 0.33066356033086775,
+    "diversity_vendi": 2.5651998430490495,
+    "diversity_vendi_sscd": 3.5663336753845214
+   },
+   "init": {
+    "CLIP": 0.38834375000000004,
+    "diversity_color": 0.07801640061661601,
+    "diversity_dino": 0.6179491110146046,
+    "diversity_dpp": 0.7499798879027366,
+    "diversity_dpp_patch": 0.9093196257948876,
+    "diversity_dpp_patch_raw": 2.5211693406105042,
+    "diversity_dpp_raw": 2.0793857902288435,
+    "diversity_dreamsim": 0.23898814339190722,
+    "diversity_lpips": 0.6533421814441681,
+    "diversity_tiny_l2": 0.2966548930853605,
+    "diversity_vendi": 1.9275126069784165,
+    "diversity_vendi_sscd": 3.217765337228775
+   },
+   "n": 40
+  },
+  "e8_vendi": {
+   "best": {
+    "CLIP": 0.351046875,
+    "diversity_color": 0.12384064570069313,
+    "diversity_dino": 0.7123392462730408,
+    "diversity_dpp": 0.9318462461233139,
+    "diversity_dpp_patch": 0.9448355138301849,
+    "diversity_dpp_patch_raw": 2.619640290737152,
+    "diversity_dpp_raw": 2.583626401424408,
+    "diversity_dreamsim": 0.4562484547495842,
+    "diversity_lpips": 0.6879895776510239,
+    "diversity_tiny_l2": 0.32004972621798516,
+    "diversity_vendi": 3.342824423313141,
+    "diversity_vendi_sscd": 3.6899112701416015
+   },
+   "final_best_vendi_curve": 3.342824423313141,
+   "init": {
+    "CLIP": 0.3315625,
+    "diversity_color": 0.09472486898303031,
+    "diversity_dino": 0.5772684961557388,
+    "diversity_dpp": 0.796980294585228,
+    "diversity_dpp_patch": 0.8955212265253067,
+    "diversity_dpp_patch_raw": 2.4829120516777037,
+    "diversity_dpp_raw": 2.2096985816955566,
+    "diversity_dreamsim": 0.27716992869973184,
+    "diversity_lpips": 0.6228914052248001,
+    "diversity_tiny_l2": 0.27301282435655594,
+    "diversity_vendi": 2.2486853659152986,
+    "diversity_vendi_sscd": 3.340211260318756
+   },
+   "init_vendi_curve": 2.2486853659152986,
+   "n": 20,
+   "plateau_gen": 48
+  },
+  "e9_lpips": {
+   "best": {
+    "CLIP": 0.34165625,
+    "diversity_color": 0.17405725233256816,
+    "diversity_dino": 0.7035121828317642,
+    "diversity_dpp": 0.8153925538063049,
+    "diversity_dpp_patch": 0.9413593173027038,
+    "diversity_dpp_patch_raw": 2.6100022315979006,
+    "diversity_dpp_raw": 2.260748195648193,
+    "diversity_dreamsim": 0.4928178206086159,
+    "diversity_lpips": 0.9679046988487243,
+    "diversity_tiny_l2": 0.37568657025694846,
+    "diversity_vendi": 2.391344368457794,
+    "diversity_vendi_sscd": 3.746134543418884
+   },
+   "init": {
+    "CLIP": 0.336203125,
+    "diversity_color": 0.09097528345882892,
+    "diversity_dino": 0.5965292006731033,
+    "diversity_dpp": 0.7410005271434784,
+    "diversity_dpp_patch": 0.9004033982753754,
+    "diversity_dpp_patch_raw": 2.4964483261108397,
+    "diversity_dpp_raw": 2.0544897079467774,
+    "diversity_dreamsim": 0.2902262758463621,
+    "diversity_lpips": 0.6620685756206512,
+    "diversity_tiny_l2": 0.29531590789556506,
+    "diversity_vendi": 1.8827828824520112,
+    "diversity_vendi_sscd": 3.3351109266281127
+   },
+   "n": 20
   }
  },
  "reference": {
