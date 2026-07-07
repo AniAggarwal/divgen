@@ -5,6 +5,10 @@ claims changed. Statuses update as the campaign progresses; final version
 committed when E1–E11 conclude. Data root: `/workspace/runs/paperprep/<exp>`
 mirrored to `s3://anirud-dev/evodiv-divgen-fork/2026-07-04/paperprep-<exp>.tar.gz`.
 
+**Campaign status (2026-07-07): E1–E11 all complete and integrated into both
+papers; 14 night-queue runs complete (exploratory, not in headline numbers).
+Both papers compile (3pp / 5pp) and pass `verify_tex_numbers.py`.**
+
 ## E1 — same-harness gradient baseline (553 GenEval prompts) — DONE
 **Outcome (important nuance):** the repo's gradient optimizer via
 `geneval_sdxl_white.yaml` optimizes **DPP + HPS** (its Tab-2 objective), not the
@@ -21,12 +25,13 @@ Table-1 bold = true column max (gradient's DreamSim is bolded). Independent
 judges (E5) break the tie in breeding's favor — see E5. s/iter + peak-mem enter
 the efficiency discussion. Data: `e1_gradient/`, `stats_results.json`.
 
-### E5 (partial) — bred vs same-harness gradient on independent judges
+### E5 (E1 tie-break subset) — bred vs same-harness gradient on independent judges
 Breeding beats the gradient run on **ImageReward** (0.671 vs 0.583, p<1e-2,
 paired) and ties **PickScore** (22.54 vs 22.53, n.s.); the gradient run leads
 only **HPSv2.1** (0.286 vs 0.267) — the metric it directly optimized. On
 preference models neither method's breeding objective targeted, breeding is
-ahead-or-even. Rand/CMA-DCT judging queued behind their runs.
+ahead-or-even. Random and CMA-DCT judging is now complete too — see the full E5
+section below for all four methods.
 
 ## (historical) E1 setup note
 The repository's own optimizer (`configs/geneval_sdxl_white.yaml`: DPP+HPS,
@@ -80,7 +85,7 @@ in low freq" (would be an overclaim vs the uniform baseline) to "exploits the
 whole low-freq block." Figure: `cma_spectrum.png`. Data: `e3_cmadct/` (incl.
 per-prompt `cma_cov.npz`), `stats_results.json`.
 
-## (queued) E3 setup note
+## (historical) E3 setup note
 The exploration winner scaled 40→553 prompts with the 40-prompt script's flaw
 fixed (its "exact re-score" was dead code; winners were surrogate-scored).
 Winner latents tracked, exact-rescored every 10 iters and at the end; final
@@ -88,29 +93,39 @@ covariance eigen-spectrum + coordinate variances dumped per prompt (feeds
 E10a). Paper: Table-1 row promotion decided by the 553-prompt paired
 Wilcoxon (stats.py, Holm-corrected).
 
-## E4 — FLUX.1-schnell — PROBES DONE; BREEDING RUNNING
+## E4 — FLUX.1-schnell — DONE (60 GenEval prompts)
 Latent packing implemented (`evodiv/run.py:flux_pack`, spatial genome packed
 2×2 at the render boundary; verified byte-identical to the upstream packing).
-Memory probes complete (`e4_flux/memory_table.json`): forward-only 37.9 GB
-(B=4) / 44.4 GB (B=16) vs gradient 57.9 GB / 113.8 GB — the wall is the
-*scaling* (+6.5 GB vs +55.9 GB when B goes 4→16). Breeding run over 60
-GenEval prompts in progress (search at 1 step, init/best reported at 4 steps
-with a matched i.i.d. 4-step reference). Paper: Sec. "Scaling to FLUX" +
-Table 3 (measured, no longer an assertion).
+**Outcome:** forward-only breeding over 60 GenEval prompts lifts DINO diversity
+0.582→0.791 (best, scored at 4 steps; the 1-step search itself reaches DINO
+0.797) while holding CLIP ≈0.31 — the recipe carries to a distilled
+rectified-flow model with no gradient. Memory probes
+(`e4_flux/memory_table.json`) confirm the wall is *scaling*, not absolute size:
+forward-only 37.9 GB (B=4) / 44.4 GB (B=16) vs gradient 57.9 GB / 113.8 GB
+(+6.5 GB vs +55.9 GB as B goes 4→16). Data: `e4_flux/`. Paper: Sec. "Scaling to
+FLUX" + Table 3 (measured, no longer an assertion).
 
-## E5 — preference-model judging — WEIGHTS PREFETCHED
+## E5 — preference-model judging — DONE (all four methods)
 ImageReward + PickScore + HPSv2.1 over the final image sets of
 bred/gradient/random/CMA-DCT, plus a unified re-score of all methods' saved
 jpgs with the repo's own metric code (removes harness asymmetry for E1's
-Table-1 row). Evaluation only — never bred objectives. Runs as each method's
-images land.
+Table-1 row). Evaluation only — never bred objectives.
+**Outcome:** bred ImageReward 0.671 / PickScore 22.541 / HPSv2.1 0.267;
+gradient 0.583 / 22.532 / 0.286; random 0.715 / 22.548 / 0.270 (n=256);
+CMA-DCT 0.545 / 21.330 / 0.247 (bred/grad/CMA-DCT n=553). Breeding beats the
+gradient run on ImageReward (+0.087, paired Wilcoxon p=0.008) and ties PickScore
+(n.s.); the gradient run leads only HPSv2.1, the metric it directly optimized.
+Random search posts the single highest ImageReward but at far lower set
+diversity (DINO 0.684 vs 0.79) — an ImageReward property (it scores single-image
+appeal, not set diversity), noted rather than promoted. Data: `e5_judges/`,
+`stats_results.json`. Paper: activates the judges figure/paragraph and the
+harness-matched Table-1 gradient row.
 
-## E6 — HPSv2-floored DPP — QUEUED (config smoke-tested)
-## E7 — DPG-Bench subset (40 dense prompts) — QUEUED (config smoke-tested)
-## E8 — Vendi long-budget probe (150 gens, 20 prompts) — QUEUED
-## E9 — LPIPS probe (20 prompts) — QUEUED
-## E10 — CMA covariance spectrum (from E3) + transfer band decomposition — QUEUED
-## E11 — seed variance (20 prompts × 3 seeds) — QUEUED
+## E6–E11 — all DONE
+Final outcomes are in the "Tail experiments (E6–E9, E11)" and "E10b — transfer
+band decomposition" sections below; E10a (CMA covariance spectrum) is folded into
+the E3 section above. (These headers previously read "QUEUED" while the runs were
+pending; superseded by the results below.)
 
 ## Scheduling / cost notes (2026-07-05)
 Measured on the B200: the gradient baseline (E1) runs at ~120 s/prompt **solo
@@ -166,3 +181,16 @@ bugs fixed en route: a log KeyError, and objective weights left at their 0.0
 default that made the first run a no-op — both caught before integration.)
 Data: `e10_transfer_bands/`. Paper: activates the band decomposition in the
 "bred noise transfers across models" paragraph.
+
+## Night-queue experiments (14 runs) — DONE
+Extra genetic-method sweeps run after E1–E11 to keep the paid GPU busy;
+forward-only, SDXL-Turbo, surrogate+compile, resume-safe, never bred on
+ImageReward. Full table and per-run detail in `paper/full/NIGHT_QUEUE.md`
+(mirrored to Tigris as `NIGHT_QUEUE.md`); aggregated per-run JSON in
+`analysis/night_results/*.json` (+ `NIGHT_SUMMARY.json`); raw runs tarred to
+Tigris as `paperprep-night-<name>.tar.gz`. Fourteen runs: spectral-bias β curve
+(NA, 3), set-size / diversity ceiling (NB, 2), which diversity objective breeds
+best (NC, 2), pink-vs-white init (ND, 1), CMA-DCT dimensionality sweep (NE, 3),
+GP program-synthesis genome (NF, 1), and crossover / repair ablations at scale
+(NG, 2). **Exploratory — deliberately NOT folded into the paper's headline
+numbers**; flagged for the user to review and decide which (if any) to promote.
