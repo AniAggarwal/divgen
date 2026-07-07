@@ -1,0 +1,21 @@
+{
+ "best": {
+  "CLIP": 0.3201015625,
+  "diversity_color": 0.10277397278696299,
+  "diversity_dino": 0.6891362503170967,
+  "diversity_dpp": 0.8696156591176987,
+  "diversity_dpp_patch": 0.9405552163720131,
+  "diversity_dpp_patch_raw": 2.607772785425186,
+  "diversity_dpp_raw": 2.4110865771770476,
+  "diversity_dreamsim": 0.3369182556867599,
+  "diversity_lpips": 0.8645609498023987,
+  "diversity_tiny_l2": 0.5217875495553017,
+  "diversity_vendi": 2.7736287474632264,
+  "diversity_vendi_sscd": 3.3147254049777986
+ },
+ "mean_elapsed_s": 71.09737958312034,
+ "mean_renders_used": 9624,
+ "n": 40,
+ "total_elapsed_s": 2843.895183324814,
+ "total_renders_used": 384960
+}

@@ -1,0 +1,31 @@
+{
+ "best": {
+  "CLIP": 0.334638671875,
+  "diversity_color": 0.13838872167980298,
+  "diversity_dino": 0.7763226721435785,
+  "diversity_dpp": 0.8753925394266844,
+  "diversity_dpp_patch": 0.962306659668684,
+  "diversity_dpp_patch_raw": 2.6680806018412113,
+  "diversity_dpp_raw": 2.4271034840494394,
+  "diversity_dreamsim": 0.474532789317891,
+  "diversity_lpips": 0.7354074642062187,
+  "diversity_tiny_l2": 0.34610391524620354,
+  "diversity_vendi": 2.860755706205964,
+  "diversity_vendi_sscd": 3.6895058043301105
+ },
+ "init": {
+  "CLIP": 0.3278369140625001,
+  "diversity_color": 0.1069586812518537,
+  "diversity_dino": 0.6136184707283974,
+  "diversity_dpp": 0.7582115717232227,
+  "diversity_dpp_patch": 0.9060500832274556,
+  "diversity_dpp_patch_raw": 2.5121042504906654,
+  "diversity_dpp_raw": 2.10220886208117,
+  "diversity_dreamsim": 0.2806196272140369,
+  "diversity_lpips": 0.6456791870296001,
+  "diversity_tiny_l2": 0.2784039103426039,
+  "diversity_vendi": 1.9989394396543503,
+  "diversity_vendi_sscd": 3.3464337401092052
+ },
+ "n": 64
+}
